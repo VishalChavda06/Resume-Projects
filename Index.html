@@ -89,6 +89,42 @@
             line-height: 1.5;
         }
 
+        .project-list {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .project-list h4 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .project-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 8px;
+        }
+
+        .project-item {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            color: #555;
+            border: 1px solid #e9ecef;
+            transition: all 0.2s ease;
+        }
+
+        .project-item:hover {
+            background: #667eea;
+            color: white;
+            transform: translateX(5px);
+        }
+
         .project-links {
             display: flex;
             gap: 10px;
@@ -164,38 +200,27 @@
             <h2 class="section-title">HTML Projects</h2>
             <div class="projects-grid">
                 <div class="project-card">
-                    <h3>Project 1</h3>
-                    <p>Basic HTML structure and content layout.</p>
-                    <div class="tech-badge">HTML</div>
-                    <div class="project-links">
-                        <a href="HTML/Project-1/Index.html" class="project-link" target="_blank">View Project</a>
+                    <h3>HTML Projects Collection</h3>
+                    <p>Complete collection of HTML projects showcasing structure, navigation, and semantic elements.</p>
+                    
+                    <div class="project-list">
+                        <h4>🌐 Featured Projects:</h4>
+                        <div class="project-items">
+                            <div class="project-item">Project 1 - Basic Structure</div>
+                            <div class="project-item">Project 2 - Multi-page Navigation</div>
+                            <div class="project-item">Project 3 - About & Contact Pages</div>
+                            <div class="project-item">Project 4 - Advanced Semantic Elements</div>
+                        </div>
                     </div>
-                </div>
-
-                <div class="project-card">
-                    <h3>Project 2</h3>
-                    <p>HTML with multiple pages and navigation.</p>
-                    <div class="tech-badge">HTML</div>
+                    
+                    <div class="tech-badge">HTML5</div>
+                    <div class="tech-badge">Semantic Elements</div>
+                    <div class="tech-badge">Navigation</div>
                     <div class="project-links">
-                        <a href="HTML/Project-2/Index.html" class="project-link" target="_blank">View Project</a>
-                    </div>
-                </div>
-
-                <div class="project-card">
-                    <h3>Project 3</h3>
-                    <p>Multi-page website with About and Contact pages.</p>
-                    <div class="tech-badge">HTML</div>
-                    <div class="project-links">
-                        <a href="HTML/Project-3/Index.html" class="project-link" target="_blank">View Project</a>
-                    </div>
-                </div>
-
-                <div class="project-card">
-                    <h3>Project 4</h3>
-                    <p>Advanced HTML structure and semantic elements.</p>
-                    <div class="tech-badge">HTML</div>
-                    <div class="project-links">
-                        <a href="HTML/Project-4/Index.html" class="project-link" target="_blank">View Project</a>
+                        <a href="HTML/Project-1/Index.html" class="project-link" target="_blank">Project 1</a>
+                        <a href="HTML/Project-2/Index.html" class="project-link secondary" target="_blank">Project 2</a>
+                        <a href="HTML/Project-3/Index.html" class="project-link secondary" target="_blank">Project 3</a>
+                        <a href="HTML/Project-4/Index.html" class="project-link secondary" target="_blank">Project 4</a>
                     </div>
                 </div>
             </div>
@@ -206,22 +231,26 @@
             <h2 class="section-title">CSS Projects</h2>
             <div class="projects-grid">
                 <div class="project-card">
-                    <h3>Product Cards</h3>
-                    <p>Beautiful product showcase with cards and responsive design.</p>
-                    <div class="tech-badge">HTML</div>
-                    <div class="tech-badge">CSS</div>
-                    <div class="project-links">
-                        <a href="CSS/Project-1/Index.html" class="project-link" target="_blank">View Project</a>
+                    <h3>CSS Projects Collection</h3>
+                    <p>Complete collection of CSS projects showcasing styling, responsive design, and modern layouts.</p>
+                    
+                    <div class="project-list">
+                        <h4>🎨 Featured Projects:</h4>
+                        <div class="project-items">
+                            <div class="project-item">Product Cards - Responsive Design</div>
+                            <div class="project-item">Multi-Page Website - TechSolutions</div>
+                            <div class="project-item">Navbar & Footer Design</div>
+                            <div class="project-item">Modern UI Components</div>
+                        </div>
                     </div>
-                </div>
-
-                <div class="project-card">
-                    <h3>Multi-Page Website</h3>
-                    <p>Complete website with navbar, footer, and multiple pages using TechSolutions branding.</p>
-                    <div class="tech-badge">HTML</div>
-                    <div class="tech-badge">CSS</div>
+                    
+                    <div class="tech-badge">CSS3</div>
+                    <div class="tech-badge">Responsive Design</div>
+                    <div class="tech-badge">Flexbox</div>
+                    <div class="tech-badge">Grid Layout</div>
                     <div class="project-links">
-                        <a href="CSS/Project-2/Index.html" class="project-link" target="_blank">Home</a>
+                        <a href="CSS/Project-1/Index.html" class="project-link" target="_blank">Product Cards</a>
+                        <a href="CSS/Project-2/Index.html" class="project-link secondary" target="_blank">TechSolutions Home</a>
                         <a href="CSS/Project-2/about.html" class="project-link secondary" target="_blank">About</a>
                         <a href="CSS/Project-2/services.html" class="project-link secondary" target="_blank">Services</a>
                         <a href="CSS/Project-2/contact.html" class="project-link secondary" target="_blank">Contact</a>
@@ -235,11 +264,31 @@
             <h2 class="section-title">JavaScript Projects</h2>
             <div class="projects-grid">
                 <div class="project-card">
-                    <h3>JavaScript Showcase</h3>
-                    <p>Collection of JavaScript projects including counters, games, APIs, and more.</p>
-                    <div class="tech-badge">HTML</div>
-                    <div class="tech-badge">CSS</div>
+                    <h3>JavaScript Projects Collection</h3>
+                    <p>Complete collection of JavaScript projects including interactive applications, games, APIs, and modern web features.</p>
+                    
+                    <div class="project-list">
+                        <h4>⚡ Featured Projects:</h4>
+                        <div class="project-items">
+                            <div class="project-item">Counter Applications</div>
+                            <div class="project-item">Digital Clock</div>
+                            <div class="project-item">Dice Game</div>
+                            <div class="project-item">Weather API</div>
+                            <div class="project-item">Student Data Management</div>
+                            <div class="project-item">Product Management</div>
+                            <div class="project-item">Form Validations</div>
+                            <div class="project-item">Stopwatch</div>
+                            <div class="project-item">Music Player</div>
+                            <div class="project-item">COVID-19 API</div>
+                            <div class="project-item">Final Project</div>
+                            <div class="project-item">Exam Projects</div>
+                        </div>
+                    </div>
+                    
                     <div class="tech-badge">JavaScript</div>
+                    <div class="tech-badge">ES6+</div>
+                    <div class="tech-badge">APIs</div>
+                    <div class="tech-badge">DOM Manipulation</div>
                     <div class="project-links">
                         <a href="Javascript/index.html" class="project-link" target="_blank">View All JS Projects</a>
                     </div>
@@ -252,63 +301,38 @@
             <h2 class="section-title">React Projects</h2>
             <div class="projects-grid">
                 <div class="project-card">
-                    <h3>Data Table</h3>
-                    <p>React application with data table functionality.</p>
-                    <div class="tech-badge">React</div>
-                    <div class="tech-badge">JavaScript</div>
-                    <div class="project-links">
-                        <a href="React/data_table/index.html" class="project-link" target="_blank">View Project</a>
+                    <h3>React Projects Collection</h3>
+                    <p>Complete collection of modern React applications with various features and technologies.</p>
+                    
+                    <div class="project-list">
+                        <h4>📱 Featured Projects:</h4>
+                        <div class="project-items">
+                            <div class="project-item">Data Table</div>
+                            <div class="project-item">EduMini</div>
+                            <div class="project-item">Exam System</div>
+                            <div class="project-item">File Explorer</div>
+                            <div class="project-item">Final Project</div>
+                            <div class="project-item">Firebase Integration</div>
+                            <div class="project-item">Navigator</div>
+                            <div class="project-item">React-Redux</div>
+                            <div class="project-item">React Template</div>
+                            <div class="project-item">React Toolkit</div>
+                            <div class="project-item">Redux API Handle</div>
+                            <div class="project-item">Redux Notification</div>
+                            <div class="project-item">Redux Themes</div>
+                            <div class="project-item">Review Comment</div>
+                            <div class="project-item">Stopwatch</div>
+                            <div class="project-item">Theme Toggle</div>
+                        </div>
                     </div>
-                </div>
-
-                <div class="project-card">
-                    <h3>EduMini</h3>
-                    <p>Educational platform built with React and modern UI components.</p>
+                    
                     <div class="tech-badge">React</div>
                     <div class="tech-badge">TypeScript</div>
+                    <div class="tech-badge">JavaScript</div>
                     <div class="tech-badge">Tailwind CSS</div>
-                    <div class="project-links">
-                        <a href="React/edumini/index.html" class="project-link" target="_blank">View Project</a>
-                    </div>
-                </div>
-
-                <div class="project-card">
-                    <h3>Exam System</h3>
-                    <p>Online examination system with React.</p>
-                    <div class="tech-badge">React</div>
-                    <div class="tech-badge">JavaScript</div>
-                    <div class="project-links">
-                        <a href="React/exam/index.html" class="project-link" target="_blank">View Project</a>
-                    </div>
-                </div>
-
-                <div class="project-card">
-                    <h3>File Explorer</h3>
-                    <p>File management system built with React.</p>
-                    <div class="tech-badge">React</div>
-                    <div class="tech-badge">TypeScript</div>
-                    <div class="project-links">
-                        <a href="React/explorer/index.html" class="project-link" target="_blank">View Project</a>
-                    </div>
-                </div>
-
-                <div class="project-card">
-                    <h3>Final Project</h3>
-                    <p>Comprehensive React application with multiple features.</p>
-                    <div class="tech-badge">React</div>
-                    <div class="tech-badge">JavaScript</div>
-                    <div class="project-links">
-                        <a href="React/final_project/index.html" class="project-link" target="_blank">View Project</a>
-                    </div>
-                </div>
-
-                <div class="project-card">
-                    <h3>Firebase Integration</h3>
-                    <p>React app with Firebase authentication and database.</p>
-                    <div class="tech-badge">React</div>
                     <div class="tech-badge">Firebase</div>
                     <div class="project-links">
-                        <a href="React/firebase/index.html" class="project-link" target="_blank">View Project</a>
+                        <a href="https://github.com/VishalChavda06/React" class="project-link" target="_blank">View All React Projects</a>
                     </div>
                 </div>
             </div>
@@ -319,56 +343,30 @@
             <h2 class="section-title">Node.js Projects</h2>
             <div class="projects-grid">
                 <div class="project-card">
-                    <h3>Blog Management System</h3>
-                    <p>Full-stack blog application with Node.js backend.</p>
+                    <h3>Node.js Projects Collection</h3>
+                    <p>Complete collection of backend applications and APIs built with Node.js and modern technologies.</p>
+                    
+                    <div class="project-list">
+                        <h4>🚀 Featured Projects:</h4>
+                        <div class="project-items">
+                            <div class="project-item">Blog Management System</div>
+                            <div class="project-item">Blog Management with Login</div>
+                            <div class="project-item">Book Store Details</div>
+                            <div class="project-item">Custom Server</div>
+                            <div class="project-item">HTML to Node.js</div>
+                            <div class="project-item">Movie Project</div>
+                            <div class="project-item">To-Do List</div>
+                        </div>
+                    </div>
+                    
                     <div class="tech-badge">Node.js</div>
                     <div class="tech-badge">Express</div>
                     <div class="tech-badge">MongoDB</div>
-                    <div class="project-links">
-                        <a href="Node/Blog Management System/index.js" class="project-link" target="_blank">View Project</a>
-                    </div>
-                </div>
-
-                <div class="project-card">
-                    <h3>Blog with Login</h3>
-                    <p>Blog system with authentication and user management.</p>
-                    <div class="tech-badge">Node.js</div>
+                    <div class="tech-badge">EJS</div>
                     <div class="tech-badge">React</div>
                     <div class="tech-badge">Authentication</div>
                     <div class="project-links">
-                        <a href="Node/Blog_management_with_login/" class="project-link" target="_blank">View Project</a>
-                    </div>
-                </div>
-
-                <div class="project-card">
-                    <h3>Book Store API</h3>
-                    <p>RESTful API for book store management.</p>
-                    <div class="tech-badge">Node.js</div>
-                    <div class="tech-badge">Express</div>
-                    <div class="tech-badge">API</div>
-                    <div class="project-links">
-                        <a href="Node/book_store_details/Index.js" class="project-link" target="_blank">View Project</a>
-                    </div>
-                </div>
-
-                <div class="project-card">
-                    <h3>Custom Server</h3>
-                    <p>Custom HTTP server implementation with Node.js.</p>
-                    <div class="tech-badge">Node.js</div>
-                    <div class="tech-badge">HTTP Server</div>
-                    <div class="project-links">
-                        <a href="Node/custom_server/Index.html" class="project-link" target="_blank">View Project</a>
-                    </div>
-                </div>
-
-                <div class="project-card">
-                    <h3>To-Do List</h3>
-                    <p>Task management application with Node.js backend.</p>
-                    <div class="tech-badge">Node.js</div>
-                    <div class="tech-badge">EJS</div>
-                    <div class="tech-badge">Express</div>
-                    <div class="project-links">
-                        <a href="Node/to-do-list/Index.js" class="project-link" target="_blank">View Project</a>
+                        <a href="https://github.com/VishalChavda06/Node_Projects/tree/main" class="project-link" target="_blank">View All Node.js Projects</a>
                     </div>
                 </div>
             </div>
