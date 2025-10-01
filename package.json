@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Portfolio showcase of web development projects",
   "main": "Index.html",
+  "type": "module",
   "scripts": {
     "build": "echo 'No build step required for static site'",
     "start": "echo 'Static site - no start script needed'"
