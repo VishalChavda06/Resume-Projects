@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio - Project Showcase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .project-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .project-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+
+        .project-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .project-card p {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .project-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .project-link {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .project-link:hover {
+            background: #5a6fd8;
+            transform: scale(1.05);
+        }
+
+        .project-link.secondary {
+            background: #6c757d;
+        }
+
+        .project-link.secondary:hover {
+            background: #5a6268;
+        }
+
+        .tech-badge {
+            display: inline-block;
+            background: #e9ecef;
+            color: #495057;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            padding: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .project-links {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>My Portfolio</h1>
+            <p>Welcome to my project showcase - A collection of web development projects</p>
+        </div>
+
+        <!-- HTML Projects -->
+        <div class="project-section">
+            <h2 class="section-title">HTML Projects</h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <h3>Project 1</h3>
+                    <p>Basic HTML structure and content layout.</p>
+                    <div class="tech-badge">HTML</div>
+                    <div class="project-links">
+                        <a href="HTML/Project-1/Index.html" class="project-link" target="_blank">View Project</a>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <h3>Project 2</h3>
+                    <p>HTML with multiple pages and navigation.</p>
+                    <div class="tech-badge">HTML</div>
+                    <div class="project-links">
+                        <a href="HTML/Project-2/Index.html" class="project-link" target="_blank">View Project</a>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <h3>Project 3</h3>
+                    <p>Multi-page website with About and Contact pages.</p>
+                    <div class="tech-badge">HTML</div>
+                    <div class="project-links">
+                        <a href="HTML/Project-3/Index.html" class="project-link" target="_blank">View Project</a>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <h3>Project 4</h3>
+                    <p>Advanced HTML structure and semantic elements.</p>
+                    <div class="tech-badge">HTML</div>
+                    <div class="project-links">
+                        <a href="HTML/Project-4/Index.html" class="project-link" target="_blank">View Project</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CSS Projects -->
+        <div class="project-section">
+            <h2 class="section-title">CSS Projects</h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <h3>Product Cards</h3>
+                    <p>Beautiful product showcase with cards and responsive design.</p>
+                    <div class="tech-badge">HTML</div>
+                    <div class="tech-badge">CSS</div>
+                    <div class="project-links">
+                        <a href="CSS/Project-1/Index.html" class="project-link" target="_blank">View Project</a>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <h3>Multi-Page Website</h3>
+                    <p>Complete website with navbar, footer, and multiple pages using TechSolutions branding.</p>
+                    <div class="tech-badge">HTML</div>
+                    <div class="tech-badge">CSS</div>
+                    <div class="project-links">
+                        <a href="CSS/Project-2/Index.html" class="project-link" target="_blank">Home</a>
+                        <a href="CSS/Project-2/about.html" class="project-link secondary" target="_blank">About</a>
+                        <a href="CSS/Project-2/services.html" class="project-link secondary" target="_blank">Services</a>
+                        <a href="CSS/Project-2/contact.html" class="project-link secondary" target="_blank">Contact</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JavaScript Projects -->
+        <div class="project-section">
+            <h2 class="section-title">JavaScript Projects</h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <h3>JavaScript Showcase</h3>
+                    <p>Collection of JavaScript projects including counters, games, APIs, and more.</p>
+                    <div class="tech-badge">HTML</div>
+                    <div class="tech-badge">CSS</div>
+                    <div class="tech-badge">JavaScript</div>
+                    <div class="project-links">
+                        <a href="Javascript/index.html" class="project-link" target="_blank">View All JS Projects</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- React Projects -->
+        <div class="project-section">
+            <h2 class="section-title">React Projects</h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <h3>Data Table</h3>
+                    <p>React application with data table functionality.</p>
+                    <div class="tech-badge">React</div>
+                    <div class="tech-badge">JavaScript</div>
+                    <div class="project-links">
+                        <a href="React/data_table/index.html" class="project-link" target="_blank">View Project</a>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <h3>EduMini</h3>
+                    <p>Educational platform built with React and modern UI components.</p>
+                    <div class="tech-badge">React</div>
+                    <div class="tech-badge">TypeScript</div>
+                    <div class="tech-badge">Tailwind CSS</div>
+                    <div class="project-links">
+                        <a href="React/edumini/index.html" class="project-link" target="_blank">View Project</a>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <h3>Exam System</h3>
+                    <p>Online examination system with React.</p>
+                    <div class="tech-badge">React</div>
+                    <div class="tech-badge">JavaScript</div>
+                    <div class="project-links">
+                        <a href="React/exam/index.html" class="project-link" target="_blank">View Project</a>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <h3>File Explorer</h3>
+                    <p>File management system built with React.</p>
+                    <div class="tech-badge">React</div>
+                    <div class="tech-badge">TypeScript</div>
+                    <div class="project-links">
+                        <a href="React/explorer/index.html" class="project-link" target="_blank">View Project</a>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <h3>Final Project</h3>
+                    <p>Comprehensive React application with multiple features.</p>
+                    <div class="tech-badge">React</div>
+                    <div class="tech-badge">JavaScript</div>
+                    <div class="project-links">
+                        <a href="React/final_project/index.html" class="project-link" target="_blank">View Project</a>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <h3>Firebase Integration</h3>
+                    <p>React app with Firebase authentication and database.</p>
+                    <div class="tech-badge">React</div>
+                    <div class="tech-badge">Firebase</div>
+                    <div class="project-links">
+                        <a href="React/firebase/index.html" class="project-link" target="_blank">View Project</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Node.js Projects -->
+        <div class="project-section">
+            <h2 class="section-title">Node.js Projects</h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <h3>Blog Management System</h3>
+                    <p>Full-stack blog application with Node.js backend.</p>
+                    <div class="tech-badge">Node.js</div>
+                    <div class="tech-badge">Express</div>
+                    <div class="tech-badge">MongoDB</div>
+                    <div class="project-links">
+                        <a href="Node/Blog Management System/index.js" class="project-link" target="_blank">View Project</a>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <h3>Blog with Login</h3>
+                    <p>Blog system with authentication and user management.</p>
+                    <div class="tech-badge">Node.js</div>
+                    <div class="tech-badge">React</div>
+                    <div class="tech-badge">Authentication</div>
+                    <div class="project-links">
+                        <a href="Node/Blog_management_with_login/" class="project-link" target="_blank">View Project</a>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <h3>Book Store API</h3>
+                    <p>RESTful API for book store management.</p>
+                    <div class="tech-badge">Node.js</div>
+                    <div class="tech-badge">Express</div>
+                    <div class="tech-badge">API</div>
+                    <div class="project-links">
+                        <a href="Node/book_store_details/Index.js" class="project-link" target="_blank">View Project</a>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <h3>Custom Server</h3>
+                    <p>Custom HTTP server implementation with Node.js.</p>
+                    <div class="tech-badge">Node.js</div>
+                    <div class="tech-badge">HTTP Server</div>
+                    <div class="project-links">
+                        <a href="Node/custom_server/Index.html" class="project-link" target="_blank">View Project</a>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <h3>To-Do List</h3>
+                    <p>Task management application with Node.js backend.</p>
+                    <div class="tech-badge">Node.js</div>
+                    <div class="tech-badge">EJS</div>
+                    <div class="tech-badge">Express</div>
+                    <div class="project-links">
+                        <a href="Node/to-do-list/Index.js" class="project-link" target="_blank">View Project</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2024 My Portfolio. All projects are for demonstration purposes.</p>
+        </div>
+    </div>
+</body>
+</html>
