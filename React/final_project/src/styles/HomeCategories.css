@@ -1,0 +1,117 @@
+.categories-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 64px 0 32px 0;
+}
+.categories-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 48px 32px;
+  justify-items: center;
+  align-items: center;
+}
+.category-item {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+/* .category-item:hover .category-img {
+  transform: scale(1.08) rotate(-2deg);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+} */
+.category-img {
+  width: 220px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 60px;
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), box-shadow 0.3s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.category-title {
+  font-size: 2.8rem;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400;
+  color: #222;
+}
+.view-all {
+  margin-top: 32px;
+  font-size: 1.3rem;
+  color: #222;
+  border-bottom: 2px solid #222;
+  display: inline-block;
+  padding-bottom: 2px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.view-all:hover {
+  color: #666;
+  border-bottom: 2px solid #666;
+}
+
+/* Shopping Cart Preview Styles */
+.shopping-cart-preview {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  height: fit-content;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.cart-preview-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.free-shipping-banner {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 8px;
+}
+
+.shipping-icon {
+  display: flex;
+  align-items: center;
+}
+
+.cart-preview-message {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6b7280;
+}
+
+.cart-preview-message p:first-child {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  color: #374151;
+}
+
+/* Hide scrollbar for horizontal carousel */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}

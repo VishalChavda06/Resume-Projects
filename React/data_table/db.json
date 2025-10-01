@@ -1,0 +1,64 @@
+{
+  "students": [
+    {
+      "name": "Vishal",
+      "email": "vishal@gamil.com",
+      "phone": "1234567890",
+      "course": "BBA",
+      "address": "surat",
+      "gender": "male",
+      "age": "20",
+      "id": "30de"
+    },
+    {
+      "id": "0174",
+      "name": "nil",
+      "email": "nil@gamil.com",
+      "phone": "1234567890",
+      "course": "BCA",
+      "address": "surat",
+      "gender": "male",
+      "age": "12"
+    },
+    {
+      "id": "5c7b",
+      "name": "Urvesh",
+      "email": "urvesh@gmail.com",
+      "phone": "1234567890",
+      "course": "BBA",
+      "address": "surat",
+      "gender": "male",
+      "age": "12"
+    },
+    {
+      "id": "e769",
+      "name": "mohit ",
+      "email": "mohit@gmail.com",
+      "phone": "1234567890",
+      "course": "B.Tech",
+      "address": "surat\n",
+      "gender": "male",
+      "age": "12"
+    },
+    {
+      "id": "909e",
+      "name": "krish",
+      "email": "krish@gmail.com",
+      "phone": "1234567890",
+      "course": "MBA",
+      "address": "surat",
+      "gender": "male",
+      "age": "32"
+    },
+    {
+      "id": "9ed3",
+      "name": "abhi",
+      "email": "abhi@gmail.com",
+      "phone": "1234567890",
+      "course": "MBA",
+      "address": "surat",
+      "gender": "male",
+      "age": "12"
+    }
+  ]
+}

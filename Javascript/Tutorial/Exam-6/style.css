@@ -1,0 +1,70 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Montserrat", sans-serif;
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 50px;
+  background-color: #333;
+  height: 64px;
+  color: #ccc;
+}
+nav img {
+  height: 50px;
+}
+nav ul {
+  display: flex;
+  list-style: none;
+  gap: 20px;
+}
+nav ul li a {
+  text-decoration: none;
+  color: white;
+  font-size: 16px;
+}
+nav ul li a:hover {
+  color: #f4a261;
+}
+div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+}
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 50% !important;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #f4f4f4;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  width: 300px;
+}
+form span {
+  text-align: center;
+  font-size: 1.1rem;
+}
+input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+input[type="submit"] {
+  background-color: #333;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+input[type="submit"]:hover {
+  background-color: #f4a261;
+}

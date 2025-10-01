@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- navbar -->
+    <nav>
+        <ul>
+            <li><img src="./Images/Logo.png" alt=""></li>
+            <li>Home</li>
+            <li>About</li>
+        </ul>
+    </nav>
+    <!-- form validations -->
+    <section class="container">
+        <form id="Information">
+            <h1>Log-In</h1>
+            <div class="InfoBox">
+                <div class="UsernameInfo">
+                    <label for="name">Username</label>
+                    <input type="text" id="Username">
+                    <span id="name-error" class="name-error"></span>
+                </div>
+            </div>
+            <div class="InfoBox">
+                <div class="PasswordInfo">
+                    <label for="name">Password</label>
+                    <input type="password" id="Password">
+                    <span id="password-error" class="name-error"> </span>
+                </div>
+            </div>
+            <div class="btn">
+                <input type="submit" value="Log-In" id="submitBtn" disabled>
+            </div>
+
+            <!-- <span class="hr"></span> -->
+        </form>
+    </section>
+</body>
+<script src="script.js"> </script>
+
+</html>

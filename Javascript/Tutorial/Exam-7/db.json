@@ -1,0 +1,581 @@
+{
+    "Info":[
+      {
+        "id": "1",
+        "name": "Leanne Graham",
+        "username": "Bret",
+        "email": "Sincere@april.biz",
+        "address": {
+          "street": "Kulas Light",
+          "suite": "Apt. 556",
+          "city": "Surat",
+          "zipcode": "92998-3874",
+          "geo": {
+            "lat": "-37.3159",
+            "lng": "81.1496"
+          }
+        },
+        "phone": "1-770-736-8031 x56442",
+        "website": "hildegard.org",
+        "company": {
+          "name": "Romaguera-Crona",
+          "catchPhrase": "Multi-layered client-server neural-net",
+          "bs": "harness real-time e-markets"
+        }
+      },
+      {
+        "id": "2",
+        "name": "Ervin Howell",
+        "username": "Antonette",
+        "email": "Shanna@melissa.tv",
+        "address": {
+          "street": "Victor Plains",
+          "suite": "Suite 879",
+          "city": "Ahmedabad",
+          "zipcode": "90566-7771",
+          "geo": {
+            "lat": "-43.9509",
+            "lng": "-34.4618"
+          }
+        },
+        "phone": "010-692-6593 x09125",
+        "website": "anastasia.net",
+        "company": {
+          "name": "Deckow-Crist",
+          "catchPhrase": "Proactive didactic contingency",
+          "bs": "synergize scalable supply-chains"
+        }
+      },
+      {
+        "id": "3",
+        "name": "Clementine Bauch",
+        "username": "Samantha",
+        "email": "Nathan@yesenia.net",
+        "address": {
+          "street": "Douglas Extension",
+          "suite": "Suite 847",
+          "city": "Mumbai",
+          "zipcode": "59590-4157",
+          "geo": {
+            "lat": "-68.6102",
+            "lng": "-47.0653"
+          }
+        },
+        "phone": "1-463-123-4447",
+        "website": "ramiro.info",
+        "company": {
+          "name": "Romaguera-Jacobson",
+          "catchPhrase": "Face to face bifurcated interface",
+          "bs": "e-enable strategic applications"
+        }
+      },
+      {
+        "id": "4",
+        "name": "Patricia Lebsack",
+        "username": "Karianne",
+        "email": "Julianne.OConner@kory.org",
+        "address": {
+          "street": "Hoeger Mall",
+          "suite": "Apt. 692",
+          "city": "Pune",
+          "zipcode": "53919-4257",
+          "geo": {
+            "lat": "29.4572",
+            "lng": "-164.2990"
+          }
+        },
+        "phone": "493-170-9623 x156",
+        "website": "kale.biz",
+        "company": {
+          "name": "Robel-Corkery",
+          "catchPhrase": "Multi-tiered zero tolerance productivity",
+          "bs": "transition cutting-edge web services"
+        }
+      },
+      {
+        "id": "5",
+        "name": "Chelsey Dietrich",
+        "username": "Kamren",
+        "email": "Lucio_Hettinger@annie.ca",
+        "address": {
+          "street": "Skiles Walks",
+          "suite": "Suite 351",
+          "city": "Bangalore",
+          "zipcode": "33263",
+          "geo": {
+            "lat": "-31.8129",
+            "lng": "62.5342"
+          }
+        },
+        "phone": "(254)954-1289",
+        "website": "demarco.info",
+        "company": {
+          "name": "Keebler LLC",
+          "catchPhrase": "User-centric fault-tolerant solution",
+          "bs": "revolutionize end-to-end systems"
+        }
+      },
+      {
+        "id": "6",
+        "name": "Mrs. Dennis Schulist",
+        "username": "Leopoldo_Corkery",
+        "email": "Karley_Dach@jasper.info",
+        "address": {
+          "street": "Norberto Crossing",
+          "suite": "Apt. 950",
+          "city": "Hyderabad",
+          "zipcode": "23505-1337",
+          "geo": {
+            "lat": "-71.4197",
+            "lng": "71.7478"
+          }
+        },
+        "phone": "1-477-935-8478 x6430",
+        "website": "ola.org",
+        "company": {
+          "name": "Considine-Lockman",
+          "catchPhrase": "Synchronised bottom-line interface",
+          "bs": "e-enable innovative applications"
+        }
+      },
+      {
+        "id": "7",
+        "name": "Kurtis Weissnat",
+        "username": "Elwyn.Skiles",
+        "email": "Telly.Hoeger@billy.biz",
+        "address": {
+          "street": "Rex Trail",
+          "suite": "Suite 280",
+          "city": "Jaipur",
+          "zipcode": "58804-1099",
+          "geo": {
+            "lat": "24.8918",
+            "lng": "21.8984"
+          }
+        },
+        "phone": "210.067.6132",
+        "website": "elvis.io",
+        "company": {
+          "name": "Johns Group",
+          "catchPhrase": "Configurable multimedia task-force",
+          "bs": "generate enterprise e-tailers"
+        }
+      },
+      {
+        "id": "8",
+        "name": "Nicholas Runolfsdottir V",
+        "username": "Maxime_Nienow",
+        "email": "Sherwood@rosamond.me",
+        "address": {
+          "street": "Ellsworth Summit",
+          "suite": "Suite 729",
+          "city": "Chennai",
+          "zipcode": "45169",
+          "geo": {
+            "lat": "-14.3990",
+            "lng": "-120.7677"
+          }
+        },
+        "phone": "586.493.6943 x140",
+        "website": "jacynthe.com",
+        "company": {
+          "name": "Abernathy Group",
+          "catchPhrase": "Implemented secondary concept",
+          "bs": "e-enable extensible e-tailers"
+        }
+      },
+      {
+        "id": "9",
+        "name": "Glenna Reichert",
+        "username": "Delphine",
+        "email": "Chaim_McDermott@dana.io",
+        "address": {
+          "street": "Dayna Park",
+          "suite": "Suite 449",
+          "city": "Kolkata",
+          "zipcode": "76495-3109",
+          "geo": {
+            "lat": "24.6463",
+            "lng": "-168.8889"
+          }
+        },
+        "phone": "(775)976-6794 x41206",
+        "website": "conrad.com",
+        "company": {
+          "name": "Yost and Sons",
+          "catchPhrase": "Switchable contextually-based project",
+          "bs": "aggregate real-time technologies"
+        }
+      },
+      {
+        "id": "10",
+        "name": "Clementina DuBuque",
+        "username": "Moriah.Stanton",
+        "email": "Rey.Padberg@karina.biz",
+        "address": {
+          "street": "Kattie Turnpike",
+          "suite": "Suite 198",
+          "city": "Vadodara",
+          "zipcode": "31428-2261",
+          "geo": {
+            "lat": "-38.2386",
+            "lng": "57.2232"
+          }
+        },
+        "phone": "024-648-3804",
+        "website": "ambrose.net",
+        "company": {
+          "name": "Hoeger LLC",
+          "catchPhrase": "Centralized empowering task-force",
+          "bs": "target end-to-end models"
+        }
+      },
+      {
+        "id": "11",
+        "name": "Sophia Patel",
+        "username": "SophieP",
+        "email": "sophia.patel@example.com",
+        "address": {
+          "street": "Patel Street",
+          "suite": "Apt. 305",
+          "city": "Delhi",
+          "zipcode": "110001",
+          "geo": {
+            "lat": "28.6139",
+            "lng": "77.2090"
+          }
+        },
+        "phone": "987-654-3210",
+        "website": "sophiapatel.com",
+        "company": {
+          "name": "Patel Innovations",
+          "catchPhrase": "Leading next-gen solutions",
+          "bs": "empower global markets"
+        }
+      },
+      {
+        "id": "12",
+        "name": "Arjun Mehta",
+        "username": "ArjM",
+        "email": "arjun.mehta@example.net",
+        "address": {
+          "street": "Mehta Lane",
+          "suite": "Block B",
+          "city": "Lucknow",
+          "zipcode": "226001",
+          "geo": {
+            "lat": "26.8467",
+            "lng": "80.9462"
+          }
+        },
+        "phone": "998-765-4321",
+        "website": "mehtacorp.in",
+        "company": {
+          "name": "Mehta Corp",
+          "catchPhrase": "Real-time digital integration",
+          "bs": "scale enterprise systems"
+        }
+      },
+      {
+        "id": "13",
+        "name": "Nisha Rathi",
+        "username": "NishaR",
+        "email": "nisha.rathi@example.com",
+        "address": {
+          "street": "Rathi Road",
+          "suite": "Suite 100",
+          "city": "Indore",
+          "zipcode": "452001",
+          "geo": {
+            "lat": "22.7196",
+            "lng": "75.8577"
+          }
+        },
+        "phone": "789-456-1230",
+        "website": "nisharathi.io",
+        "company": {
+          "name": "Rathi Digital",
+          "catchPhrase": "Innovate with clarity",
+          "bs": "unleash smart platforms"
+        }
+      },
+      {
+        "id": "14",
+        "name": "Rohan Malhotra",
+        "username": "RoMal",
+        "email": "rohan.malhotra@example.org",
+        "address": {
+          "street": "Palm Grove",
+          "suite": "Tower 8",
+          "city": "Chandigarh",
+          "zipcode": "160017",
+          "geo": {
+            "lat": "30.7333",
+            "lng": "76.7794"
+          }
+        },
+        "phone": "909-232-9981",
+        "website": "malhotratech.com",
+        "company": {
+          "name": "Malhotra Tech",
+          "catchPhrase": "Scalable system dynamics",
+          "bs": "deliver cloud-first models"
+        }
+      },
+      {
+        "id": "15",
+        "name": "Isha Sharma",
+        "username": "IshaS",
+        "email": "isha.sharma@example.co",
+        "address": {
+          "street": "Sector 18",
+          "suite": "Flat 204",
+          "city": "Noida",
+          "zipcode": "201301",
+          "geo": {
+            "lat": "28.5355",
+            "lng": "77.3910"
+          }
+        },
+        "phone": "880-999-7776",
+        "website": "ishasharma.dev",
+        "company": {
+          "name": "Sharma Solutions",
+          "catchPhrase": "Next-gen microservices",
+          "bs": "integrate mobile interfaces"
+        }
+      },
+      {
+        "id": "16",
+        "name": "Devansh Bhatia",
+        "username": "DevB",
+        "email": "devansh.b@example.io",
+        "address": {
+          "street": "New Town",
+          "suite": "Unit 15A",
+          "city": "Gurgaon",
+          "zipcode": "122001",
+          "geo": {
+            "lat": "28.4595",
+            "lng": "77.0266"
+          }
+        },
+        "phone": "777-555-9990",
+        "website": "bhatialabs.in",
+        "company": {
+          "name": "Bhatia Labs",
+          "catchPhrase": "AI-powered business intelligence",
+          "bs": "automate workflow pipelines"
+        }
+      },
+      {
+        "id": "17",
+        "name": "Meera Kapoor",
+        "username": "MeeraK",
+        "email": "meera.kapoor@example.biz",
+        "address": {
+          "street": "Sunset Boulevard",
+          "suite": "Apt. 504",
+          "city": "Thane",
+          "zipcode": "400601",
+          "geo": {
+            "lat": "19.2183",
+            "lng": "72.9781"
+          }
+        },
+        "phone": "970-800-1212",
+        "website": "meerakapoor.org",
+        "company": {
+          "name": "Kapoor Solutions",
+          "catchPhrase": "Revolutionary digital approach",
+          "bs": "scale up distributed networks"
+        }
+      },
+      {
+        "id": "18",
+        "name": "Siddharth Joshi",
+        "username": "SidJ",
+        "email": "sid.joshi@example.com",
+        "address": {
+          "street": "Joshi Circle",
+          "suite": "Villa 6",
+          "city": "Nagpur",
+          "zipcode": "440001",
+          "geo": {
+            "lat": "21.1458",
+            "lng": "79.0882"
+          }
+        },
+        "phone": "981-222-3456",
+        "website": "joshiportals.net",
+        "company": {
+          "name": "Joshi Portals",
+          "catchPhrase": "Automated experience pipelines",
+          "bs": "transform collaborative environments"
+        }
+      },
+      {
+        "id": "19",
+        "name": "Tanvi Desai",
+        "username": "TanviD",
+        "email": "tanvi.desai@example.co.in",
+        "address": {
+          "street": "Sea View Avenue",
+          "suite": "Penthouse",
+          "city": "Goa",
+          "zipcode": "403001",
+          "geo": {
+            "lat": "15.2993",
+            "lng": "74.1240"
+          }
+        },
+        "phone": "982-567-9988",
+        "website": "desaiinnovates.com",
+        "company": {
+          "name": "Desai Innovates",
+          "catchPhrase": "Experience design redefined",
+          "bs": "engineer frictionless platforms"
+        }
+      },
+      {
+        "id": "20",
+        "name": "Rajeev Nair",
+        "username": "RajNair",
+        "email": "rajeev.nair@example.org",
+        "address": {
+          "street": "Green Park",
+          "suite": "Plot 9",
+          "city": "Kochi",
+          "zipcode": "682020",
+          "geo": {
+            "lat": "9.9312",
+            "lng": "76.2673"
+          }
+        },
+        "phone": "884-667-5544",
+        "website": "rajeevnair.org",
+        "company": {
+          "name": "Nair Analytics",
+          "catchPhrase": "Real-time insights for everyone",
+          "bs": "orchestrate actionable data"
+        }
+      },
+      {
+        "id": "21",
+        "name": "Ananya Verma",
+        "username": "AnanyaV",
+        "email": "ananya.verma@example.net",
+        "address": {
+          "street": "Verma Nagar",
+          "suite": "Bldg. 9B",
+          "city": "Kanpur",
+          "zipcode": "208001",
+          "geo": {
+            "lat": "26.4499",
+            "lng": "80.3319"
+          }
+        },
+        "phone": "965-554-2134",
+        "website": "vermasoft.co",
+        "company": {
+          "name": "VermaSoft",
+          "catchPhrase": "Empowering smart cities",
+          "bs": "synthesize intelligent architecture"
+        }
+      },
+      {
+        "id": "22",
+        "name": "Rahul Jain",
+        "username": "RahulJ",
+        "email": "rahul.jain@example.dev",
+        "address": {
+          "street": "Silver Hills",
+          "suite": "Tower A",
+          "city": "Bhopal",
+          "zipcode": "462001",
+          "geo": {
+            "lat": "23.2599",
+            "lng": "77.4126"
+          }
+        },
+        "phone": "995-666-1122",
+        "website": "rahuljain.dev",
+        "company": {
+          "name": "Jain Infotech",
+          "catchPhrase": "Smarter data pipelines",
+          "bs": "drive modular analytics"
+        }
+      },
+      {
+        "id": "23",
+        "name": "Sneha Roy",
+        "username": "SnehaRoy",
+        "email": "sneha.roy@example.in",
+        "address": {
+          "street": "Royal Lane",
+          "suite": "Suite 402",
+          "city": "Patna",
+          "zipcode": "800001",
+          "geo": {
+            "lat": "25.5941",
+            "lng": "85.1376"
+          }
+        },
+        "phone": "974-885-6611",
+        "website": "sneharoy.com",
+        "company": {
+          "name": "Roy Enterprises",
+          "catchPhrase": "Efficient automation stack",
+          "bs": "streamline hybrid systems"
+        }
+      },
+      {
+        "id": "24",
+        "name": "Karan Thakur",
+        "username": "KTDev",
+        "email": "karan.t@example.me",
+        "address": {
+          "street": "Valley Drive",
+          "suite": "House 7",
+          "city": "Shimla",
+          "zipcode": "171001",
+          "geo": {
+            "lat": "31.1048",
+            "lng": "77.1734"
+          }
+        },
+        "phone": "889-231-2233",
+        "website": "karanthakur.dev",
+        "company": {
+          "name": "Thakur Dynamics",
+          "catchPhrase": "Reliable systems engineering",
+          "bs": "enhance robust infrastructures"
+        }
+      },
+      {
+        "id": "25",
+        "name": "Priya Ghosh",
+        "username": "PriyaG",
+        "email": "priya.ghosh@example.net",
+        "address": {
+          "street": "Park Street",
+          "suite": "Unit 503",
+          "city": "Howrah",
+          "zipcode": "711101",
+          "geo": {
+            "lat": "22.5958",
+            "lng": "88.2636"
+          }
+        },
+        "phone": "900-999-0001",
+        "website": "priyaghosh.org",
+        "company": {
+          "name": "Ghosh Global",
+          "catchPhrase": "Connected commerce solutions",
+          "bs": "empower seamless integration"
+        }
+      }
+  
+    ]
+    
+}

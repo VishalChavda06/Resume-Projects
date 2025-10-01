@@ -1,0 +1,153 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap");
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "Josefin Sans", sans-serif;
+}
+
+nav {
+  display: flex;
+  height: 67px;
+  width: 100%;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #c1d8c3;
+}
+
+.buttons button {
+  width: 150px;
+  height: 40px;
+  margin-right: 20px;
+  border-radius: 8px;
+  background-color: transparent;
+  border: 1px solid #5f99ae;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  transition: all 0.5s ease-in-out;
+}
+
+.buttons button:hover {
+  background-color: #5f99ae;
+  transform: scale(1.09);
+  color: #fdfaf6;
+}
+
+.buttons a {
+  text-decoration: none;
+  font-size: 1rem;
+  color: #5f99ae;
+}
+
+.buttons a:hover {
+  color: #fdfaf6;
+  padding: 20px 5px;
+}
+
+.container {
+  display: flex;
+  gap: 10px;
+  background-color: #c1d8c3;
+}
+.container .left {
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+}
+.container .right {
+  width: 70%;
+}
+.logo img {
+  width: 250px;
+  object-fit: cover;
+}
+#UIShow {
+  display: flex;
+  gap: 20px;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+#UIShow div {
+  width: 350px;
+  /* height: 350px; */
+  border: 1px solid black;
+  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+  text-align: center;
+  border-radius: 10px;
+  padding: 10px 15px;
+}
+
+#UIShow button {
+  width: 150px;
+  height: 40px;
+  margin-top: 20px;
+  margin-right: 20px;
+  border-radius: 8px;
+  background-color: transparent;
+  border: 1px solid #7d0a0a;
+  transition: all 0.5s ease-in-out;
+}
+
+#UIShow button:hover {
+  background-color: #7d0a0a;
+  transform: scale(1.09);
+  color: #fdfaf6;
+  cursor: pointer;
+}
+
+#UIShow div img {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+}
+
+#UIShow h4 {
+  font-size: 20px;
+}
+
+.category-buttons {
+  border: 1.5px solid black;
+  padding: 10px 50px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  gap: 20px;
+  margin-left: 10px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.category-buttons button {
+  padding: 10px;
+  width: 250px;
+  border-radius: 10px;
+  font-size: 16px;
+  border: none;
+  background-color: transparent;
+  border: 1px solid #5f99ae;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  transition: all 0.5s ease-in-out;
+}
+
+.category-buttons button:hover {
+  background-color: #5f99ae;
+  color: #fff;
+  transform: scale(1.1) translateX(15px);
+  cursor: pointer;
+}
+
+.left div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.left input {
+  width: 90%;
+  height: 34px;
+  padding-left: 10px;
+  border-radius: 10px;
+  border: none;
+  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+}

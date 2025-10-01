@@ -1,0 +1,26 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.carousel-item {
+  height: 60vh;
+  background-size: cover;
+  background-position:center;
+  position: relative;
+  color: white;
+  text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.8);
+}
+
+.carousel-caption {
+  bottom: 20%;
+}
+
+.carousel-caption h1 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+
+

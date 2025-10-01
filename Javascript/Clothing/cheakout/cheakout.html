@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Closetique</title>
+    <link rel="stylesheet" href="checkout.css">
+    <!-- Media Query -->
+    <link rel="stylesheet" href="../MediaQuery/cheakout.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="logo"><a href="/Clothing/HomePage/Home.html">Closetique</a></div>
+        <!-- <input type="text" class="search-bar" placeholder="Search for products..."> -->
+        <div class="nav-icons">
+            <a href="/Clothing/ProductPage/Product.html">Back to Prodcuts</a>
+            <a href="/Clothing/ProductPage/cart.html">Back to Cart🛒 </a>
+        </div>
+    </nav>
+    <div class="checkout-container" id="blur">
+        <h2>Checkout</h2>
+
+        <!-- Address Section -->
+        <div class="address-section">
+            <h3>Shipping Address</h3>
+            <div class="box">
+                <input type="text" id="name" placeholder="Full Name" required>
+                <span id="error">Fill a Name:</span>
+            </div>
+            <div class="box">
+                <input type="text" id="address" placeholder="Address">
+                <!-- <span id="error">File The Address:</span> -->
+            </div>
+            <div class="box">
+                <input type="text" id="city" placeholder="City">
+                <!-- <span id="error">File The City:</span> -->
+            </div>
+            <div class="box">
+                <input type="text" id="zipcode" placeholder="Zip Code" maxlength="6">
+                <!-- <span id="error">File The ZipCode:</span> -->
+            </div>
+            <div class="box">
+                <input type="text" id="number" placeholder="Moblie No" maxlength="10">
+                <!-- <span id="error">File The ZipCode:</span> -->
+            </div>
+        </div>
+
+        <!-- Payment Section -->
+        <div class="payment-section">
+            <h3>Payment Method</h3>
+            <label><input type="radio" name="payment" value="card" checked> Credit/Debit Card</label>
+            <label><input type="radio" name="payment" value="cod"> Cash on Delivery</label>
+            <input type="text" id="card-number" placeholder="Card Number" maxlength="16">
+            <input type="text" id="expiry-date" placeholder="Expiry Date (MM/YY)" maxlength="5">
+            <input type="text" id="cvv" placeholder="CVV" maxlength="3">
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-summary">
+            <h3>Order Summary</h3>
+            <ul id="order-items"></ul>
+            <p><strong>Total:</strong> $<span id="final-price">0.00</span></p>
+        </div>
+
+        <button id="place-order-btn">Place Order</button>
+    </div>
+    <div id="footer">
+        <div class="container">
+            <h1>Your Order SuccessFully..</h1>
+            <p class="counter">0%</p>
+            <hr class="load-bar-back">
+            <hr class="load-bar-font">
+        </div>
+    </div>
+
+
+    
+    <script src="checkout.js"></script>
+</body>
+
+</html>

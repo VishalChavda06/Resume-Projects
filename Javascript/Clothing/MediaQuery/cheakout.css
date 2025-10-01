@@ -1,0 +1,224 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+@media screen and (max-width: 1920px) {
+  /* General Styles */
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    min-height: 100vh;
+  }
+
+  /* navbar */
+  h2 {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #444;
+  }
+
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 5%;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+
+  .logo a {
+    text-decoration: none;
+    font-size: 24px;
+    font-weight: bold;
+    color: #222;
+  }
+
+  .search-bar {
+    padding: 10px;
+    width: 250px;
+    border: 2px solid #ddd;
+    border-radius: 25px;
+    outline: none;
+  }
+
+  .nav-links {
+    display: flex;
+    list-style: none;
+    gap: 20px;
+  }
+
+  .nav-icons a {
+    text-decoration: none;
+    color: #222;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    padding: 8px;
+    background-color: transparent;
+    border-radius: 7px;
+    margin-right: 10px;
+  }
+
+  .nav-icons a:hover {
+    box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px,
+      rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px;
+    color: #e63946;
+  }
+
+  .nav-links a {
+    text-decoration: none;
+    color: #222;
+    font-weight: 500;
+    transition: color 0.3s ease;
+  }
+
+  .nav-links a:hover {
+    color: #e63946;
+  }
+
+  /* Checkout Container */
+  .checkout-container {
+    background: white;
+    padding: 20px;
+    margin: 10px auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 60%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  /* Section Headings */
+  h2 {
+    grid-column: span 2;
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  /* Form Sections */
+  .address-section,
+  .payment-section {
+    background: #fafafa;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  }
+
+  .address-section .box {
+    height: 60px;
+  }
+
+  #error {
+    color: red;
+    position: relative;
+    bottom: 10px;
+    left: 10px;
+    display: none;
+  }
+
+  /* Inputs & Labels */
+  input,
+  label {
+    display: block;
+    width: 95%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+
+  input[type="text"]:hover {
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  }
+
+  input[type="number"]:hover {
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  }
+
+  label {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  /* Payment Method */
+  .payment-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Card Payment Fields */
+  .card-details {
+    display: none;
+    /* Initially hidden */
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 15px;
+    background: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Order Summary */
+  .order-summary {
+    grid-column: span 2;
+    background: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  }
+
+  .order-summary ul {
+    list-style-type: none;
+    padding: 0;
+  }
+
+  .order-summary ul li {
+    background: #f1f1f1;
+    padding: 8px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+  }
+
+  /* Place Order Button */
+  button {
+    grid-column: span 2;
+    padding: 12px;
+    background-color: #a4b465;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #626f47;
+  }
+
+  #footer {
+    /* background-color: #2a272783; */
+    height: 100vh;
+    width: 99%;
+    position: absolute;
+    top: 10px;
+    z-index: 999;
+    display: none;
+    transform: translateX(10px);
+    transition: all 0.5s ease-in-out;
+  }
+
+  #footer .container {
+    padding: 10px;
+    margin: 300px auto;
+  }
+}

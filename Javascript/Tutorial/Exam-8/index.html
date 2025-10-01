@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recipe Book</title>
+    <link rel="stylesheet" href="./style.css" />
+    <!-- icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <div class="container">
+        <h1>🍽️ Recipe Book</h1>
+        <div class="controls">
+            <!-- Searching -->
+            <input type="text" id="searchInput" placeholder="Search recipes..." />
+            <!-- Sorting -->
+            <select id="sortSelect">
+                <option value="default">Sort</option>
+                <option value="name">Name (A-Z)</option>
+                <option value="rating">Rating (High to Low)</option>
+            </select>
+        </div>
+        <div id="recipeList" class="recipe-list">
+            <!-- RecipeList Show -->
+        </div>
+    </div>
+
+    <script src="./index.js"></script>
+</body>
+
+</html>

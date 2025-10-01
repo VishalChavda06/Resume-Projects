@@ -1,0 +1,30 @@
+.action-btn {
+  position: relative;
+  overflow: hidden;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+.action-btn.edit {
+  background: linear-gradient(90deg, #2563eb 60%, #60a5fa 100%);
+  color: #fff;
+}
+.action-btn.delete {
+  background: linear-gradient(90deg, #dc2626 60%, #f87171 100%);
+  color: #fff;
+}
+.action-btn.edit:hover {
+  background: linear-gradient(90deg, #1d4ed8 60%, #3b82f6 100%);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(37,99,235,0.15);
+  transform: translateY(-2px) scale(1.03);
+}
+.action-btn.delete:hover {
+  background: linear-gradient(90deg, #b91c1c 60%, #ef4444 100%);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(220,38,38,0.15);
+  transform: translateY(-2px) scale(1.03);
+}
+.action-btn svg {
+  margin-right: 0.5rem;
+  font-size: 1.1em;
+}

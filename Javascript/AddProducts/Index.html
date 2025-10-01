@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- font -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <form id="Products">
+        <span>
+            Products Details
+        </span>
+        <input type="text" id="title" placeholder="Products Name">
+        <input type="number" id="price" placeholder="Products price">
+        <input type="img" id="img" placeholder="Products Img">
+        <select id="category">
+            <option value=""> Products Category</option>
+            <option value="Kids">Kids</option>
+            <option value="Men">Men</option>
+            <option value="Women">Women</option>
+        </select>
+        <input type="submit" value="create">
+    </form>
+    <hr>
+    <div class="btn">
+        <div>
+            <button><a href="./Like.html" style="text-decoration: none; color: antiquewhite;">Add List Page</a> </button>
+        </div>
+        <button id="lth">Low to High</button>
+        <button id="htl">High to Low </button>
+        <div class="Filter">
+            <button id="Kids"> Kids</button>
+            <button id="men">Men</button>
+            <button id="Women">Women</button>
+            <button id="All">All</button>
+            <input type="search" id="search" placeholder="Search Any Itmes">
+        </div>
+    </div>
+
+    <h2 id="ProductsList"></h2>
+</body>
+<script src="script.js"></script>
+
+</html>

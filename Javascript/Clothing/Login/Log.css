@@ -1,0 +1,84 @@
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f8f9fa;
+}
+.container {
+  width: 445px;
+  padding: 20px;
+  background: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  text-align: center;
+}
+input {
+  width: 90%;
+  padding: 10px;
+  margin: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+}
+button {
+  width: 90%;
+  padding: 10px;
+  background-color: #5a67d8;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #4c51bf;
+}
+.hidden {
+  display: none;
+}
+
+/* erros handle */
+
+.box {
+  height: 74px;
+  position: relative;
+}
+
+#name-error,
+#email-error,
+#password-error {
+  color: red;
+  position: absolute;
+  top: 50px;
+  left: 21px;
+  z-index: 3;
+  transition: all 0.5s ease-in-out;
+}
+
+#success,
+#newuser,
+#alreday {
+  /* position: absolute;
+  top: 90px;
+  right: 650px; */
+  display: none;
+  padding: 15px 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  color: green;
+  box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px,
+    rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px,
+    rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
+}
+
+#alreday {
+  color: red;
+  margin-bottom: 10px;
+}
+
+#success i,
+#alreday i {
+  padding-right: 5px;
+}

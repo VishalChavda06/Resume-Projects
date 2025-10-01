@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Closetique | Products</title>
+    <link rel="stylesheet" href="Product.css">
+    <!-- media Query -->
+    <link rel="stylesheet" href="../MediaQuery/product.css">
+    <!-- icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- amimation scroll -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo"><a href="/Clothing/HomePage/Home.html">Closetique</a></div>
+        <input type="text" class="search-bar" id="search-bar" placeholder="Search for products...">
+        <ul class="nav-links">
+            <li><a href="#">Men</a></li>
+            <li><a href="#">Women</a></li>
+            <li><a href="#">Kids</a></li>
+            <li><a href="#">Accessories</a></li>
+        </ul>
+        <div class="nav-icons">
+            <a href="/Clothing/HomePage/Home.html">Home</a>
+
+            <a href="cart.html" class="cart-link"><i class="fa-solid fa-cart-shopping"></i><span
+                    id="cart-count">0</span></a>
+        </div>
+    </nav>
+
+    <!-- Product Categories -->
+    <section class="categories">
+        <span id="allreday"><i class="fa-solid fa-triangle-exclamation"></i> Product Alreday In Cart.</span>
+        <h2>Select Category</h2>
+        <div class="MainBtn">
+            <button id="All">All</button>
+            <button id="Men">Men</button>
+            <button id="Women">Women</button>
+            <button id="kids">Kids</button>
+            <button id="Accessories">Accessories</button>
+        </div>
+        <!-- prices-btn -->
+        <div class="prices-btn">
+            <button id="lth">Low To High</button>
+            <button id="htl">High To Low</button>
+        </div>
+    </section>
+
+
+
+    <!-- Product Listing -->
+    <section class="product-list">
+        <h2>Our Products</h2>
+        <div id="product-container" class="product-grid">
+            <!-- Products will be loaded dynamically -->
+        </div>
+    </section>
+
+</body>
+<script src="Product.js"></script>
+<!-- amimation scroll -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init();
+</script>
+
+</html>

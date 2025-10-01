@@ -1,0 +1,26 @@
+{
+  "name": "book_store_details",
+  "version": "1.0.0",
+  "description": "A book store management system",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "bookstore",
+    "books",
+    "management"
+  ],
+  "author": "",
+  "license": "ISC",
+      "dependencies": {
+      "cors": "^2.8.5",
+      "dotenv": "^16.3.1",
+      "express": "^4.21.2"
+    },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

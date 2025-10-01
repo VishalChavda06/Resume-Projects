@@ -1,0 +1,66 @@
+{
+  "students": [
+    {
+      "name": "urvesh bhai",
+      "email": "seller@example.com",
+      "phone": "1234567890",
+      "course": "Computer Science",
+      "address": "surat",
+      "dateOfBirth": "2001-03-06",
+      "status": "Active",
+      "id": "8b73"
+    },
+    {
+      "name": "abhi",
+      "email": "abhi@gmail.com",
+      "phone": "1234567890",
+      "course": "Chemistry",
+      "address": "surat amroli char-rasta",
+      "dateOfBirth": "1222-12-31",
+      "status": "Active",
+      "id": "ee9e"
+    }
+  ],
+  "users": [
+    {
+      "id": "1",
+      "name": "Admin User",
+      "email": "admin@example.com",
+      "password": "admin123",
+      "authMethod": "json",
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "00ac",
+      "name": "Test User",
+      "email": "test@example.com",
+      "password": "test123",
+      "authMethod": "json",
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "795d",
+      "name": "vishal chavda",
+      "email": "vishal@gmail.com",
+      "password": "vishal123",
+      "authMethod": "json",
+      "createdAt": "2025-09-08T11:50:52.168Z"
+    },
+    {
+      "id": "2d59",
+      "name": "abhi",
+      "email": "abhi@gmail.com",
+      "password": "abhi123",
+      "authMethod": "json",
+      "createdAt": "2025-09-08T11:51:57.389Z"
+    },
+    {
+      "id": "d7ff",
+      "name": "urvesh",
+      "email": "seller@example.com",
+      "password": "urvesh123",
+      "authMethod": "json",
+      "createdAt": "2025-09-08T11:53:58.444Z"
+    }
+  ]
+}
