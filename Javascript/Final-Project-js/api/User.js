@@ -1,4 +1,4 @@
-const BaseUrl = "http://localhost:3000/UserData";
+const BaseUrl = "/api/userdata";
 
 const usertypes = {
     create: async (data) => {
