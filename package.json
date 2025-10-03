@@ -4,9 +4,13 @@
   "description": "Portfolio showcase of web development projects",
   "main": "Index.html",
   "type": "module",
+  "engines": {
+    "node": "18.x"
+  },
   "scripts": {
     "build": "echo 'No build step required for static site'",
-    "start": "echo 'Static site - no start script needed'"
+    "start": "echo 'Static site - no start script needed'",
+    "dev": "vercel dev"
   },
   "keywords": ["portfolio", "web-development", "projects", "html", "css", "javascript", "react", "node"],
   "author": "Vishal Chavda",
