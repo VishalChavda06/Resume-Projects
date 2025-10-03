@@ -1,62 +1,62 @@
 # 🎯 Quiz App with Timer - Complete Game Guide
 
-A modern, interactive quiz application built with React and Vite featuring dual timers: 1-minute total timer and 20-second per-question timer with instant game-over functionality.
+આ એક modern, interactive quiz application છે જે React અને Vite સાથે બનાવવામાં આવી છે, જેમાં dual timers છે: 1-minute total timer અને 20-second per-question timer જે instant game-over functionality સાથે છે.
 
 ![Quiz App Demo](https://img.shields.io/badge/React-19.1.1-blue) ![Vite](https://img.shields.io/badge/Vite-7.1.7-purple) ![License](https://img.shields.io/badge/License-MIT-green)
 
 ## 🎮 Game Overview
 
-This is a fast-paced quiz game that tests your knowledge under time pressure. You have **1 minute total** to answer **10 questions**, but each question has a **20-second limit**. If you don't answer within 20 seconds, the game ends immediately!
+આ એક fast-paced quiz game છે જે time pressure હેઠળ તમારા knowledgeની પરીક્ષા કરે છે. તમારી પાસે **10 questions**ના જવાબ માટે **1 minute total** છે, પરંતુ દરેક questionની **20-second limit** છે. જો તમે 20 secondsમાં જવાબ ન આપો, તો game તરત જ end થઈ જાય છે!
 
 ### 🏆 Key Features
 
 - ⏱️ **Dual Timer System**: 1-minute total + 20-second per-question timer
-- 🚫 **Game Over on Timeout**: Quiz ends immediately if no answer within 20 seconds
-- 🎨 **Interactive Interface**: Multiple-choice questions with instant feedback
-- ✅ **Visual Feedback**: Green for correct, red for wrong answers
+- 🚫 **Game Over on Timeout**: Quiz ends immediately જો 20 secondsમાં જવાબ ન મળે
+- 🎨 **Interactive Interface**: Multiple-choice questions સાથે instant feedback
+- ✅ **Visual Feedback**: Correct answer માટે green, wrong answer માટે red color
 - 📊 **Score Tracking**: Real-time score calculation
-- 🏆 **Results Screen**: Performance analysis with retry options
-- 📱 **Responsive Design**: Works on desktop and mobile devices
-- ✨ **Smooth Animations**: Professional transitions and effects
+- 🏆 **Results Screen**: Performance analysis સાથે retry options
+- 📱 **Responsive Design**: Desktop અને mobile devices પર કામ કરે છે
+- ✨ **Smooth Animations**: Professional transitions અને effects
 
 ## 🚀 Quick Start Guide
 
 ### Prerequisites
 
-Before you start, make sure you have these installed on your computer:
+શરૂ કરતા પહેલા, તમારા computer પર આ install કરવાની ખાતરી કરો:
 
-- **Node.js** (version 14 or higher) - [Download here](https://nodejs.org/)
-- **npm** (comes with Node.js) or **yarn**
-- A modern web browser (Chrome, Firefox, Safari, Edge)
+- **Node.js** (version 14 અથવા higher) - [અહીં download કરો](https://nodejs.org/)
+- **npm** (Node.js સાથે આવે છે) અથવા **yarn**
+- એક modern web browser (Chrome, Firefox, Safari, Edge)
 
-### Step 1: Download/Clone the Project
+### Step 1: Project Download/Clone કરો
 
 ```bash
-# If you have the project folder, navigate to it
+# જો તમારી પાસે project folder છે, તો તેમાં જાઓ
 cd quiz-app
 
-# Or if you need to download it, use git clone
+# અથવા જો તમારે download કરવાની જરૂર છે, તો git clone વાપરો
 git clone <repository-url>
 cd quiz-app
 ```
 
-### Step 2: Install Dependencies
+### Step 2: Dependencies Install કરો
 
-Open your terminal/command prompt in the project folder and run:
+Project folderમાં તમારા terminal/command prompt ખોલો અને ચલાવો:
 
 ```bash
 npm install
 ```
 
-This will install all the required packages. Wait for it to complete (usually takes 1-2 minutes).
+આ બધા required packages install કરશે. તે complete થાય ત્યાં સુધી wait કરો (usually 1-2 minutes લાગે છે).
 
-### Step 3: Start the Development Server
+### Step 3: Development Server શરૂ કરો
 
 ```bash
 npm run dev
 ```
 
-You should see output like this:
+તમારે આવું output જોવા મળશે:
 ```
 > quiz-app@0.0.0 dev
 > vite
@@ -67,78 +67,78 @@ You should see output like this:
   ➜  Network: use --host to expose
 ```
 
-### Step 4: Open the Game
+### Step 4: Game ખોલો
 
-1. Open your web browser
-2. Go to `http://localhost:5173/` (or the URL shown in your terminal)
-3. The Quiz App should load and display the welcome screen
+1. તમારો web browser ખોલો
+2. `http://localhost:5173/` પર જાઓ (અથવા તમારા terminalમાં બતાવેલ URL)
+3. Quiz App load થવી જોઈએ અને welcome screen બતાવવી જોઈએ
 
 ## 🎯 How to Play - Complete Guide
 
 ### Phase 1: Welcome Screen
-1. **Read the Rules**: Carefully read all the game rules
-2. **Understand the Timers**: 
-   - You have 1 minute total for all questions
-   - Each question has 20 seconds maximum
-   - Game ends if you don't answer within 20 seconds
-3. **Click "Start Quiz"** to begin
+1. **Rules વાંચો**: બધા game rules carefully વાંચો
+2. **Timers સમજો**: 
+   - તમારી પાસે બધા questions માટે total 1 minute છે
+   - દરેક questionની maximum 20 seconds છે
+   - 20 secondsમાં જવાબ ન આપો તો game end થાય છે
+3. **"Start Quiz" click કરો** શરૂ કરવા માટે
 
 ### Phase 2: Quiz Start Screen
-1. **Final Confirmation**: Review the timer rules one more time
-2. **Warning Notice**: Pay attention to the yellow warning box
-3. **Click "Start Quiz Now"** to begin the actual quiz
+1. **Final Confirmation**: Timer rulesની એક વાર ફરી review કરો
+2. **Warning Notice**: Yellow warning box પર attention આપો
+3. **"Start Quiz Now" click કરો** actual quiz શરૂ કરવા માટે
 
 ### Phase 3: Playing the Quiz
 
-#### Understanding the Interface:
-- **Total Time**: Shows remaining time for entire quiz (60 seconds)
-- **Question Time**: Shows remaining time for current question (20 seconds)
-- **Progress Bar**: Shows how many questions you've completed
-- **Score**: Shows your current correct answers
+#### Interface સમજવું:
+- **Total Time**: Entire quiz માટે remaining time બતાવે છે (60 seconds)
+- **Question Time**: Current question માટે remaining time બતાવે છે (20 seconds)
+- **Progress Bar**: તમે કેટલા questions complete કર્યા છે તે બતાવે છે
+- **Score**: તમારા current correct answers બતાવે છે
 
-#### Answering Questions:
-1. **Read the Question**: Take time to understand what's being asked
-2. **Read All Options**: Look at all 4 answer choices
-3. **Make Your Choice**: Click on the answer you think is correct
+#### Questionsના જવાબ આપવા:
+1. **Question વાંચો**: શું પૂછવામાં આવી રહ્યું છે તે understand કરવા માટે time લો
+2. **All Options વાંચો**: બધા 4 answer choices જુઓ
+3. **Your Choice કરો**: તમને લાગે છે કે correct છે તે answer પર click કરો
 4. **Instant Feedback**: 
-   - ✅ Correct answer turns **GREEN**
-   - ❌ Wrong answer turns **RED**
-   - ⚪ Other options become disabled
-5. **Auto-Advance**: Game automatically moves to next question after 1 second
+   - ✅ Correct answer **GREEN** થાય છે
+   - ❌ Wrong answer **RED** થાય છે
+   - ⚪ Other options disabled થઈ જાય છે
+5. **Auto-Advance**: 1 second પછી game automatically next question પર જાય છે
 
 #### Time Management Strategy:
-- **Use Time Wisely**: You can spend more time on difficult questions within the 20-second limit
-- **Don't Rush**: But remember, if 20 seconds pass without an answer, the game ends
-- **Stay Focused**: The dual timer system requires quick thinking
+- **Time wisely વાપરો**: 20-second limitમાં difficult questions પર વધુ time ગાળી શકો છો
+- **Rush ન કરો**: પરંતુ remember કરો, 20 seconds વિના answer વીતી જાય તો game end થાય છે
+- **Focused રહો**: Dual timer systemને quick thinkingની જરૂર છે
 
 ### Phase 4: Results Screen
 
-When the quiz ends (either by completing all questions or running out of time):
+જ્યારે quiz end થાય છે (બધા questions complete કરીને અથવા time પૂરો થઈને):
 
-1. **Score Display**: See your percentage and total score
-2. **Performance Message**: Get feedback based on your performance
+1. **Score Display**: તમારી percentage અને total score જુઓ
+2. **Performance Message**: તમારા performanceના આધારે feedback મેળવો
 3. **Options**:
-   - **Retry Quiz**: Start over with the same questions
-   - **Back to Start**: Return to the welcome screen
+   - **Retry Quiz**: Same questions સાથે ફરીથી શરૂ કરો
+   - **Back to Start**: Welcome screen પર પાછા જાઓ
 
 ## 🎮 Game Rules - Detailed
 
 ### ⏱️ Timer Rules
-- **Total Time**: 60 seconds for all 10 questions
-- **Per Question**: Maximum 20 seconds per individual question
-- **Game Over**: If you don't answer within 20 seconds, the quiz ends immediately
-- **No Pause**: Timers cannot be paused or stopped
+- **Total Time**: બધા 10 questions માટે 60 seconds
+- **Per Question**: દરેક individual question માટે maximum 20 seconds
+- **Game Over**: 20 secondsમાં જવાબ ન આપો તો quiz immediately end થાય છે
+- **No Pause**: Timers pause કરી શકાતા નથી અથવા stop કરી શકાતા નથી
 
 ### 🎯 Scoring System
 - **Correct Answer**: +1 point
 - **Wrong Answer**: 0 points
-- **No Answer**: 0 points (and game ends)
-- **Final Score**: Displayed as both number and percentage
+- **No Answer**: 0 points (અને game end થાય છે)
+- **Final Score**: Number અને percentage બંને તરીકે display થાય છે
 
 ### 🚫 Game Over Conditions
-1. **Time Out**: 20 seconds pass without selecting an answer
-2. **Total Time**: 60 seconds total time runs out
-3. **Manual End**: Completing all 10 questions
+1. **Time Out**: Answer select કર્યા વિના 20 seconds વીતી જાય
+2. **Total Time**: 60 secondsનો total time પૂરો થાય
+3. **Manual End**: બધા 10 questions complete કરવા
 
 ## 📁 Project Structure
 
@@ -146,18 +146,18 @@ When the quiz ends (either by completing all questions or running out of time):
 quiz-app/
 ├── src/
 │   ├── components/
-│   │   ├── Welcome.jsx      # Welcome screen with rules
-│   │   ├── Quiz.jsx         # Main quiz logic and dual timers
+│   │   ├── Welcome.jsx      # Rules સાથે welcome screen
+│   │   ├── Quiz.jsx         # Main quiz logic અને dual timers
 │   │   ├── Question.jsx     # Individual question display
 │   │   ├── Timer.jsx        # Timer countdown component
-│   │   └── Result.jsx       # Results screen with score
+│   │   └── Result.jsx       # Score સાથે results screen
 │   ├── data/
 │   │   └── questions.js     # Quiz questions database
 │   ├── App.jsx              # Main application component
 │   ├── main.jsx             # Application entry point
-│   └── index.css            # Global styles and animations
+│   └── index.css            # Global styles અને animations
 ├── package.json             # Project dependencies
-└── README.md               # This file
+└── README.md               # આ file
 ```
 
 ## 🛠️ Development Commands
@@ -165,101 +165,101 @@ quiz-app/
 ### Available Scripts
 
 ```bash
-# Start development server
+# Development server શરૂ કરો
 npm run dev
 
-# Build for production
+# Production માટે build કરો
 npm run build
 
-# Preview production build
+# Production build preview
 npm run preview
 
-# Run linting
+# Linting ચલાવો
 npm run lint
 ```
 
 ### Development Server
-- **URL**: `http://localhost:5173/` (or next available port)
-- **Hot Reload**: Changes update automatically
-- **Console**: Check browser console for any errors
+- **URL**: `http://localhost:5173/` (અથવા next available port)
+- **Hot Reload**: Changes automatically update થાય છે
+- **Console**: કોઈપણ errors માટે browser console તપાસો
 
 ## 🎨 Customization Guide
 
-### Adding New Questions
+### નવા Questions ઉમેરવા
 
-Edit `src/data/questions.js`:
+`src/data/questions.js` edit કરો:
 
 ```javascript
 {
   id: 11,
-  question: "Your question here?",
+  question: "તમારો question અહીં?",
   options: ["Option A", "Option B", "Option C", "Option D"],
-  correct: 2  // Index of correct option (0-based: 0, 1, 2, 3)
+  correct: 2  // Correct optionનો index (0-based: 0, 1, 2, 3)
 }
 ```
 
-### Changing Timer Duration
+### Timer Duration બદલવી
 
-Edit `src/components/Quiz.jsx`:
+`src/components/Quiz.jsx` edit કરો:
 
 ```javascript
-// Change total time (currently 60 seconds)
+// Total time બદલો (currently 60 seconds)
 const [totalTimeLeft, setTotalTimeLeft] = useState(60);
 
-// Change per-question time (currently 20 seconds)
+// Per-question time બદલો (currently 20 seconds)
 const [questionTimeLeft, setQuestionTimeLeft] = useState(20);
 ```
 
 ### Styling Customization
 
-Edit `src/index.css` to customize:
-- **Colors**: Change the green/red highlight colors
-- **Fonts**: Modify typography and text styles
-- **Animations**: Adjust transitions and effects
-- **Layout**: Change spacing and positioning
+Customize કરવા માટે `src/index.css` edit કરો:
+- **Colors**: Green/red highlight colors બદલો
+- **Fonts**: Typography અને text styles modify કરો
+- **Animations**: Transitions અને effects adjust કરો
+- **Layout**: Spacing અને positioning બદલો
 
 ## 🎯 Game Strategies & Tips
 
 ### ⚡ Speed Strategies
-1. **Quick Scan**: Read questions and options quickly
-2. **Eliminate Wrong**: Cross out obviously wrong answers
-3. **Trust First Instinct**: Don't overthink simple questions
-4. **Time Management**: Spend more time on difficult questions
+1. **Quick Scan**: Questions અને options ઝડપથી વાંચો
+2. **Eliminate Wrong**: Obviously wrong answers કાઢી નાખો
+3. **Trust First Instinct**: Simple questions પર overthink ન કરો
+4. **Time Management**: Difficult questions પર વધુ time ગાળો
 
 ### 🧠 Knowledge Tips
-1. **General Knowledge**: Questions cover various topics
-2. **Common Sense**: Many answers can be reasoned out
-3. **Process of Elimination**: Use logic to narrow down choices
-4. **Stay Calm**: Don't panic under time pressure
+1. **General Knowledge**: Questions various topicsને cover કરે છે
+2. **Common Sense**: ઘણા answers logicથી શોધી શકાય છે
+3. **Process of Elimination**: Choices narrow કરવા માટે logic વાપરો
+4. **Stay Calm**: Time pressure હેઠળ panic ન કરો
 
 ### 🎮 Gameplay Tips
-1. **Practice**: Play multiple times to improve
-2. **Learn from Mistakes**: Review wrong answers
-3. **Stay Focused**: Avoid distractions during gameplay
-4. **Have Fun**: It's a game, enjoy the challenge!
+1. **Practice**: Improve કરવા માટે multiple times ખેલો
+2. **Learn from Mistakes**: Wrong answersની review કરો
+3. **Stay Focused**: Gameplay દરમિયાન distractions avoid કરો
+4. **Have Fun**: આ એક game છે, challengeનો enjoy કરો!
 
 ## 🐛 Troubleshooting
 
-### Common Issues
+### Common Problems
 
-**Problem**: App won't start
-- **Solution**: Make sure Node.js is installed and run `npm install`
+**Problem**: App શરૂ થતી નથી
+- **Solution**: Node.js install છે તેની ખાતરી કરો અને `npm install` ચલાવો
 
 **Problem**: Port already in use
-- **Solution**: The app will automatically find the next available port
+- **Solution**: App automatically next available port શોધશે
 
-**Problem**: Colors not showing
-- **Solution**: Refresh the page or clear browser cache
+**Problem**: Colors દેખાતા નથી
+- **Solution**: Page refresh કરો અથવા browser cache clear કરો
 
-**Problem**: Timer not working
-- **Solution**: Check browser console for JavaScript errors
+**Problem**: Timer કામ નથી કરતો
+- **Solution**: JavaScript errors માટે browser console તપાસો
 
 ### Getting Help
 
-1. **Check Console**: Open browser developer tools (F12) and check for errors
-2. **Restart Server**: Stop the dev server (Ctrl+C) and run `npm run dev` again
-3. **Clear Cache**: Hard refresh the page (Ctrl+Shift+R)
-4. **Check Dependencies**: Run `npm install` to ensure all packages are installed
+1. **Console તપાસો**: Browser developer tools (F12) ખોલો અને errors તપાસો
+2. **Server Restart કરો**: Dev server બંધ કરો (Ctrl+C) અને ફરીથી `npm run dev` ચલાવો
+3. **Cache Clear કરો**: Page hard refresh કરો (Ctrl+Shift+R)
+4. **Dependencies તપાસો**: બધા packages install છે તેની ખાતરી માટે `npm install` ચલાવો
 
 ## 📱 Browser Compatibility
 
@@ -267,26 +267,26 @@ Edit `src/index.css` to customize:
 - ✅ **Firefox** (latest version)
 - ✅ **Safari** (latest version)
 - ✅ **Edge** (latest version)
-- ✅ **Mobile browsers** (iOS Safari, Chrome Mobile)
+- ✅ **Mobile Browsers** (iOS Safari, Chrome Mobile)
 
 ## 🎉 Features in Detail
 
 ### Timer System
-- **Dual Timer Display**: Shows both total and question time
+- **Dual Timer Display**: Total અને question time બંને બતાવે છે
 - **Visual Countdown**: Color changes (green → orange → red)
-- **Automatic End**: Game ends when time runs out
+- **Automatic End**: Time પૂરો થાય ત્યારે game end થાય છે
 - **Smooth Animations**: Professional timer animations
 
 ### Question Management
-- **One at a Time**: Focus on single question
+- **One at a Time**: એક question પર focus કરો
 - **Instant Feedback**: Immediate color highlighting
-- **Auto-Advance**: Automatic progression after answering
-- **Disabled State**: Prevents multiple selections
+- **Auto-Advance**: Answer આપ્યા પછી automatically progress
+- **Disabled State**: Multiple selectionsને prevent કરે છે
 
 ### Visual Design
 - **Modern UI**: Clean, professional interface
-- **Responsive**: Works on all screen sizes
-- **Animations**: Smooth transitions and effects
+- **Responsive**: બધા screen sizes પર કામ કરે છે
+- **Animations**: Smooth transitions અને effects
 - **Color Coding**: Clear visual feedback system
 
 ## 🏆 Scoring Guide
@@ -297,31 +297,31 @@ Edit `src/index.css` to customize:
 - **50-69%**: Good effort! 👍
 - **Below 50%**: Keep practicing! 💪
 
-### Tips for High Scores
-1. **Answer Quickly**: Don't waste time on easy questions
-2. **Stay Focused**: Avoid distractions
-3. **Use Logic**: Reason through difficult questions
-4. **Practice**: Play multiple times to improve
+### High Score Tips
+1. **Answer Quickly**: Simple questions પર time waste ન કરો
+2. **Stay Focused**: Distractions avoid કરો
+3. **Use Logic**: Difficult questionsમાંથી reason કરો
+4. **Practice**: Improve કરવા માટે multiple times ખેલો
 
 ## 📄 License
 
-This project is open source and available under the [MIT License](LICENSE).
+આ project open source છે અને [MIT License](LICENSE) હેઠળ available છે.
 
 ## 🤝 Contributing
 
-Feel free to contribute to this project:
+આ projectમાં contribute કરવા માટે free:
 
-1. **Fork** the repository
-2. **Create** a feature branch
-3. **Make** your changes
-4. **Submit** a pull request
+1. **Repository fork** કરો
+2. **Feature branch બનાવો**
+3. **તમારા changes** કરો
+4. **Pull request** submit કરો
 
 ## 🎯 Conclusion
 
-This Quiz App with Timer is designed to be both challenging and fun. The dual timer system creates an exciting, fast-paced experience that tests both your knowledge and your ability to think quickly under pressure.
+આ Quiz App with Timer challenging અને fun બંને બનવા માટે design કરવામાં આવી છે. Dual timer system એક exciting, fast-paced experience બનાવે છે જે તમારા knowledge અને pressure હેઠળ quickly think કરવાની ability બંનેની પરીક્ષા કરે છે.
 
-**Remember**: The key to success is staying calm, thinking quickly, and managing your time effectively. Good luck, and have fun! 🎮✨
+**Remember**: Successની key calm રહેવી, quickly think કરવું અને તમારા timeને effectively manage કરવું છે. Good luck, અને મજા કરો! 🎮✨
 
 ---
 
-**Ready to test your knowledge? Start the game now!** 🚀
+**તમારા knowledgeની પરીક્ષા કરવા ready છો? હવે game શરૂ કરો!** 🚀
