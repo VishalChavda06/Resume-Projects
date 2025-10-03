@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "functions": {
-    "api/userdata.js": {
-      "runtime": "nodejs18.x",
-      "maxDuration": 10
+  "builds": [
+    {
+      "src": "api/userdata.js",
+      "use": "@vercel/node@3.0.7"
     }
-  },
+  ],
   "rewrites": [
     {
       "source": "/api/(.*)",
