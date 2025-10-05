@@ -1,10 +1,149 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { calculateItemTotal } from '../Utils/Cal'
+import * as XLSX from 'xlsx'
 
 const Summary = ({items}) => {
+  // State to track printed items
+  const [printedItems, setPrintedItems] = useState([]);
+
+  // Load printed items from localStorage on component mount
+  useEffect(() => {
+    const savedPrintedItems = localStorage.getItem('printedItems');
+    if (savedPrintedItems) {
+      try {
+        setPrintedItems(JSON.parse(savedPrintedItems));
+      } catch (error) {
+        console.error('Error parsing printed items:', error);
+      }
+    }
+  }, []);
+
+  // Save printed items to localStorage whenever it changes
+  useEffect(() => {
+    if (printedItems.length > 0) {
+      localStorage.setItem('printedItems', JSON.stringify(printedItems));
+    }
+  }, [printedItems]);
+
+  // Function to handle print and track printed items
+  const handlePrintAndTrack = (index, items) => {
+    // Print the bill
+    printSingleBill(index, items);
+    
+    // Add to printed items with timestamp
+    const itemToPrint = items[index];
+    const total = calculateItemTotal(itemToPrint.qty, itemToPrint.price, itemToPrint.discount);
+    const tax = total * 0.18;
+    const subTotal = total + tax;
+    
+    const printedItem = {
+      ...itemToPrint,
+      total: total,
+      tax: tax,
+      subTotal: subTotal,
+      printedAt: new Date().toISOString(),
+      invoiceNumber: `INV-${Date.now()}-${index + 1}`
+    };
+    
+    setPrintedItems(prev => [...prev, printedItem]);
+  };
+
+  // Function to export printed items to Excel
+  const exportToExcel = () => {
+    if (printedItems.length === 0) {
+      alert('No printed items to export! Please print some bills first.');
+      return;
+    }
+
+    // Prepare data for Excel
+    const excelData = printedItems.map((item, index) => ({
+      'Invoice #': item.invoiceNumber,
+      'Printed Date': new Date(item.printedAt).toLocaleDateString(),
+      'Printed Time': new Date(item.printedAt).toLocaleTimeString(),
+      'Item Name': item.name,
+      'Quantity': item.qty,
+      'Price': item.price,
+      'Discount (%)': item.discount,
+      'Total': item.total.toFixed(2),
+      'Tax (18%)': item.tax.toFixed(2),
+      'Subtotal': item.subTotal.toFixed(2)
+    }));
+
+    // Create workbook and worksheet
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(excelData);
+
+    // Set column widths
+    const colWidths = [
+      { wch: 15 }, // Invoice #
+      { wch: 12 }, // Printed Date
+      { wch: 12 }, // Printed Time
+      { wch: 20 }, // Item Name
+      { wch: 10 }, // Quantity
+      { wch: 12 }, // Price
+      { wch: 12 }, // Discount
+      { wch: 12 }, // Total
+      { wch: 12 }, // Tax
+      { wch: 12 }  // Subtotal
+    ];
+    ws['!cols'] = colWidths;
+
+    // Add worksheet to workbook
+    XLSX.utils.book_append_sheet(wb, ws, 'Printed Bills');
+
+    // Generate filename with current date
+    const currentDate = new Date().toISOString().split('T')[0];
+    const filename = `Printed_Bills_${currentDate}.xlsx`;
+
+    // Save file
+    XLSX.writeFile(wb, filename);
+  };
+
+  // Function to clear printed items
+  const clearPrintedItems = () => {
+    if (window.confirm('Are you sure you want to clear all printed items? This action cannot be undone.')) {
+      setPrintedItems([]);
+      localStorage.removeItem('printedItems');
+    }
+  };
+
   return (
     <div className='space-y-4'>
-     {items.map((ele,index)=>{
+      {/* Excel Export Section */}
+      <div className='bg-white border border-slate-200 rounded-xl p-4 shadow-sm'>
+        <h2 className='text-lg font-semibold mb-3'>Export Management</h2>
+        <div className='space-y-3'>
+          <div className='flex items-center justify-between'>
+            <span className='text-sm text-gray-600'>
+              Printed Items: <strong>{printedItems.length}</strong>
+            </span>
+            <div className='space-x-2'>
+              <button 
+                onClick={exportToExcel}
+                className='px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium'
+                disabled={printedItems.length === 0}
+              >
+                📊 Export to Excel
+              </button>
+              <button 
+                onClick={clearPrintedItems}
+                className='px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium'
+                disabled={printedItems.length === 0}
+              >
+                🗑️ Clear Records
+              </button>
+            </div>
+          </div>
+          {printedItems.length > 0 && (
+            <div className='text-xs text-gray-500'>
+              Last printed: {new Date(printedItems[printedItems.length - 1]?.printedAt).toLocaleString()}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Items List */}
+      {items.map((ele,index)=>{
         const total = calculateItemTotal(ele.qty, ele.price, ele.discount);
         const tax = total * 0.18;
         const subTotal = total + tax;
@@ -21,12 +160,16 @@ const Summary = ({items}) => {
                   <p className='text-sm'><strong>SubTotal:</strong> {subTotal}</p>
                 </div>
                 <div className='mt-2.5 flex justify-end'>
-                  <button className='px-3.5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700' onClick={()=> printSingleBill(index, items)}>Print Bill</button>
+                  <button 
+                    className='px-3.5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700' 
+                    onClick={() => handlePrintAndTrack(index, items)}
+                  >
+                    Print Bill
+                  </button>
                 </div>
             </div>
         )
-
-     })}
+      })}
     </div>
   )
 }
