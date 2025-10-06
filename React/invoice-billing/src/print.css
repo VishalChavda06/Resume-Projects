@@ -1,0 +1,77 @@
+/* Shared base styles for print windows */
+@page { margin: 16mm; }
+
+html, body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #fff;
+  color: #111827; /* slate-900 */
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.print-content {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+/* Header */
+.print-header, .header {
+  text-align: center;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #2563eb; /* indigo-600 */
+  padding-bottom: 12px;
+}
+.print-title, .title { font-size: 24px; font-weight: 700; color: #1e40af; margin: 0; }
+.print-date { font-size: 12px; color: #6b7280; margin: 0; }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+th, td {
+  border: 1px solid #e5e7eb; /* slate-200 */
+  padding: 10px 12px;
+  vertical-align: middle;
+}
+th {
+  background: #f8fafc; /* slate-50 */
+  color: #374151; /* slate-700 */
+  font-weight: 600;
+  text-align: left;
+  font-size: 13px;
+}
+
+/* Utilities */
+.text-right { text-align: right; font-family: 'Courier New', monospace; }
+.text-center { text-align: center; }
+
+/* Keep currency symbol and amount on the same baseline */
+.currency { display: inline-flex; align-items: baseline; gap: 4px; white-space: nowrap; max-width: 100%; }
+.currency .rs { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: 600; }
+.currency .amt { font-family: 'Courier New', monospace; }
+
+/* Totals block */
+.total-section { margin-top: 24px; margin-left: auto; width: 360px; }
+.total-table { width: 100%; border-collapse: collapse; }
+.total-label { background: #f8fafc; font-weight: 600; color: #374151; }
+.final-total { background: #1e40af; color: #fff; font-weight: 700; font-size: 16px; }
+.final-total .total-value { color: #fff; }
+
+/* Screen-only container card */
+@media screen {
+  body { background: #f8fafc; padding: 20px; }
+  .print-content {
+    background: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,.08);
+    padding: 30px;
+  }
+}
+
+/* Print-only */
+@media print {
+  .print-button { display: none !important; }
+}
+
+/* Full-bill helpers used in printFullBill */
+.right { text-align: right; font-family: 'Courier New', monospace; }
+.totals { margin-top: 20px; width: 360px; margin-left: auto; }
+.totals td { border: 1px solid #e5e7eb; padding: 8px; }
+.final { background: #1e40af; color: #fff; font-weight: 700; }
+

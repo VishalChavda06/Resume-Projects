@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { calculateItemTotal, calculateSummary } from '../Utils/Cal'
 import * as XLSX from 'xlsx'
+// Resolved URL for the print stylesheet (moved from public to src)
+import printCssUrl from '../print.css?url'
 
 const Summary = ({items}) => {
   // Helper: round amounts to nearest whole number for display
@@ -333,7 +335,7 @@ const printSingleBill=(index, items)=>{
     const printWindow = window.open('', 'print', 'height=700,width=900');
     if(!printWindow) return;
     printWindow.document.write("<html><head><title>Invoice Bill</title>");
-    printWindow.document.write(`<link rel=\"stylesheet\" href=\"/print.css\" />`);
+    printWindow.document.write(`<link rel=\"stylesheet\" href=\"${printCssUrl}\" />`);
     printWindow.document.write("</head><body onload='window.print()'>");
     
     // Currency formatter for invoice with Indian grouping and no decimals (e.g., ₹ 30,798)
@@ -447,7 +449,7 @@ const printFullBill = (items) => {
     const printWindow = window.open('', 'print', 'height=900,width=1100');
     if(!printWindow) return;
     printWindow.document.write("<html><head><title>Invoice - Full Bill</title>");
-    printWindow.document.write(`<link rel=\"stylesheet\" href=\"/print.css\" />`);
+    printWindow.document.write(`<link rel=\"stylesheet\" href=\"${printCssUrl}\" />`);
     printWindow.document.write("</head><body onload='window.print()'>");
 
     const { subtotal, tax, total } = calculateSummary(items);
