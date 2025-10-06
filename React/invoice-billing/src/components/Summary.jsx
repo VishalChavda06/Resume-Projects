@@ -160,18 +160,10 @@ const Summary = ({items}) => {
                 🧾 Print Full Bill
               </button>
             </div>
-            <div className='grid grid-cols-1 sm:grid-cols-3 gap-3'>
+            <div className='grid grid-cols-1 gap-3'>
               <div className='p-3 rounded-lg bg-slate-50 border border-slate-200'>
-                <p className='text-xs text-slate-500'>Subtotal</p>
+                <p className='text-xs text-slate-500'>Total</p>
                 <p className='text-base font-semibold'>{formatINR(subtotal)}</p>
-              </div>
-              <div className='p-3 rounded-lg bg-slate-50 border border-slate-200'>
-                <p className='text-xs text-slate-500'>Tax (18%)</p>
-                <p className='text-base font-semibold'>{formatINR(tax)}</p>
-              </div>
-              <div className='p-3 rounded-lg bg-slate-50 border border-slate-200'>
-                <p className='text-xs text-slate-500'>Grand Total</p>
-                <p className='text-base font-semibold'>{formatINR(total)}</p>
               </div>
             </div>
           </div>
@@ -270,13 +262,12 @@ const Summary = ({items}) => {
           const globalIndexFromReversed = start + i; // index in reversed array
           const originalIndex = items.length - 1 - globalIndexFromReversed;
           const total = calculateItemTotal(ele.qty, ele.price, ele.discount);
-          const tax = total * 0.18;
-          const subTotal = total + tax;
+          const subTotal = total; // GST removed
           return (
             <div key={`card-${originalIndex}`} id={`item-${originalIndex}`} className='bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow'>
               {/* Card Header */}
               <div className='flex items-center justify-between mb-4'>
-                <h2 className='text-lg font-semibold'>Item {originalIndex + 1}</h2>
+                <h2 className='text-lg font-semibold truncate'>Bill No: {originalIndex + 1}</h2>
                 <span className='inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-sm font-medium border border-indigo-100'>
                   Paid: <span className='font-semibold'>{formatINR(subTotal)}</span>
                 </span>
@@ -303,11 +294,7 @@ const Summary = ({items}) => {
                     <span className='text-slate-800 text-sm font-medium'>{ele.qty}</span>
                   </div>
                   <div className='flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 border border-slate-200'>
-                    <span className='text-slate-500 text-sm'>Tax (18%)</span>
-                    <span className='text-slate-800 text-sm font-medium'>{formatINR(tax)}</span>
-                  </div>
-                  <div className='flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 border border-slate-200'>
-                    <span className='text-slate-500 text-sm'>SubTotal</span>
+                    <span className='text-slate-500 text-sm'>Amount</span>
                     <span className='text-slate-800 text-sm font-semibold'>{formatINR(subTotal)}</span>
                   </div>
                 </div>
@@ -336,7 +323,7 @@ const printSingleBill=(index, items)=>{
     if(!printWindow) return;
     printWindow.document.write("<html><head><title>Invoice Bill</title>");
     printWindow.document.write(`<link rel=\"stylesheet\" href=\"${printCssUrl}\" />`);
-    printWindow.document.write("</head><body onload='window.print()'>");
+    printWindow.document.write("</head><body>");
     
     // Currency formatter for invoice with Indian grouping and no decimals (e.g., ₹ 30,798)
     // Returns inline HTML with spans to keep symbol and amount perfectly aligned in one line
@@ -360,24 +347,19 @@ const printSingleBill=(index, items)=>{
     
     // Process only the selected item data
     const selectedItem = items[index];
-    const total = calculateItemTotal(selectedItem.qty, selectedItem.price, selectedItem.discount);
-    const tax = total * 0.18;
-    const subtotal = total + tax;
+    const total = calculateItemTotal(selectedItem.qty, selectedItem.price, selectedItem.discount); // no GST
+    const subtotal = total;
     
     const itemData = [{
         name: selectedItem.name,
         qty: parseFloat(selectedItem.qty) || 0,
         price: parseFloat(selectedItem.price) || 0,
         discount: parseFloat(selectedItem.discount) || 0,
-        total: total,
-        tax: tax,
-        subtotal: subtotal
+        total: total
     }];
     
     // Calculate totals
-    const grandTotal = itemData.reduce((sum, item) => sum + item.subtotal, 0);
-    const grandTax = itemData.reduce((sum, item) => sum + item.tax, 0);
-    const grandSubtotal = itemData.reduce((sum, item) => sum + item.total, 0);
+    const grandTotal = itemData.reduce((sum, item) => sum + item.total, 0);
     
     printWindow.document.write(`
         <div class="print-content">
@@ -394,8 +376,6 @@ const printSingleBill=(index, items)=>{
                         <th>Quantity</th>
                         <th>Price</th>
                         <th>Discount (%)</th>
-                        <th>Total</th>
-                        <th>Tax</th>
                         <th>Subtotal</th>
                     </tr>
                 </thead>
@@ -408,8 +388,6 @@ const printSingleBill=(index, items)=>{
                             <td class="text-right">${inr2(item.price)}</td>
                             <td class="text-right">${item.discount}%</td>
                             <td class="text-right">${inr2(item.total)}</td>
-                            <td class="text-right">${inr2(item.tax)}</td>
-                            <td class="text-right">${inr2(item.subtotal)}</td>
                         </tr>
                     `).join('')}
                 </tbody>
@@ -417,14 +395,6 @@ const printSingleBill=(index, items)=>{
             
             <div class="total-section">
                 <table class="total-table">
-                    <tr>
-                        <td class="total-label">Subtotal:</td>
-                        <td class="total-value">${inr2(grandSubtotal)}</td>
-                    </tr>
-                    <tr>
-                        <td class="total-label">Tax (18%):</td>
-                        <td class="total-value">${inr2(grandTax)}</td>
-                    </tr>
                     <tr class="final-total">
                         <td class="total-label">Total Amount:</td>
                         <td class="total-value">${inr2(grandTotal)}</td>
@@ -441,6 +411,7 @@ const printSingleBill=(index, items)=>{
     printWindow.document.write("</body></html>");
     printWindow.document.close();
     printWindow.focus();
+    setTimeout(() => { try { printWindow.print(); } catch (_) {} }, 250);
 }
 
 // Prints a full invoice containing all items in the current bill
@@ -450,7 +421,7 @@ const printFullBill = (items) => {
     if(!printWindow) return;
     printWindow.document.write("<html><head><title>Invoice - Full Bill</title>");
     printWindow.document.write(`<link rel=\"stylesheet\" href=\"${printCssUrl}\" />`);
-    printWindow.document.write("</head><body onload='window.print()'>");
+    printWindow.document.write("</head><body>");
 
     const { subtotal, tax, total } = calculateSummary(items);
 
@@ -472,27 +443,27 @@ const printFullBill = (items) => {
         </thead>
         <tbody>
           ${items.map((it, idx) => {
-            const t = calculateItemTotal(it.qty, it.price, it.discount);
+            const t = calculateItemTotal(it.qty, it.price, it.discount); // no GST
             return `
               <tr>
                 <td class="right">${idx + 1}</td>
                 <td>${it.name}</td>
                 <td class="right">${(parseFloat(it.qty)||0)}</td>
-                <td class="right">${(parseFloat(it.price)||0).toFixed(2)}</td>
+                <td class="right">${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(parseFloat(it.price)||0)}</td>
                 <td class="right">${(parseFloat(it.discount)||0)}</td>
-                <td class="right">${t.toFixed(2)}</td>
+                <td class="right">${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(t)}</td>
               </tr>
             `;
           }).join('')}
         </tbody>
       </table>
       <table class="totals">
-        <tr><td>Subtotal</td><td class="right">${subtotal.toFixed(2)}</td></tr>
-        <tr><td>Tax (18%)</td><td class="right">${tax.toFixed(2)}</td></tr>
-        <tr class="final"><td>Total Amount</td><td class="right">${total.toFixed(2)}</td></tr>
+        <tr><td>Subtotal</td><td class="right">${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(subtotal)}</td></tr>
+        <tr class="final"><td>Total Amount</td><td class="right">${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(subtotal)}</td></tr>
       </table>
     `);
     printWindow.document.write("</body></html>");
     printWindow.document.close();
     printWindow.focus();
+    setTimeout(() => { try { printWindow.print(); } catch (_) {} }, 250);
 }

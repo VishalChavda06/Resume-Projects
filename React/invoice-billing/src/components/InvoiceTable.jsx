@@ -13,24 +13,19 @@ const InvoiceTable = ({items}) => {
                     <th className='text-left font-semibold text-sm p-3 border-b border-slate-200'>Quantity</th>
                     <th className='text-left font-semibold text-sm p-3 border-b border-slate-200'>Price</th>
                     <th className='text-left font-semibold text-sm p-3 border-b border-slate-200'>Discount</th>
-                    <th className='text-left font-semibold text-sm p-3 border-b border-slate-200'>Subtotal</th>
-                    <th className='text-left font-semibold text-sm p-3 border-b border-slate-200'>Tax (18%)</th>
-                    <th className='text-left font-semibold text-sm p-3 border-b border-slate-200'>Total</th>
+                    <th className='text-left font-semibold text-sm p-3 border-b border-slate-200'>Amount</th>
                 </tr>
             </thead>
             <tbody>
                 {items.map((item, index)=>{
                     const subtotal = calculateItemTotal(item.qty, item.price, item.discount);
-                    const tax = subtotal * 0.18;
-                    const total = subtotal + tax;
+                    const total = subtotal; // GST removed
                     return (
                     <tr key={index} className='odd:bg-white even:bg-slate-50/50 hover:bg-slate-50'>
                         <td className='p-3 border-b border-slate-200 text-sm'>{item.name}</td>
                         <td className='p-3 border-b border-slate-200 text-sm'>{round(item.qty)}</td>
                         <td className='p-3 border-b border-slate-200 text-sm'>{inr(item.price)}</td>
                         <td className='p-3 border-b border-slate-200 text-sm'>{round(item.discount)}%</td>
-                        <td className='p-3 border-b border-slate-200 text-sm'>{inr(subtotal)}</td>
-                        <td className='p-3 border-b border-slate-200 text-sm'>{inr(tax)}</td>
                         <td className='p-3 border-b border-slate-200 text-sm'>{inr(total)}</td>
                     </tr>
                 )})}
