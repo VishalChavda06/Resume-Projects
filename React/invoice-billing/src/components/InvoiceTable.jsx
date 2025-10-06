@@ -1,30 +1,39 @@
 import React from 'react'
 import { calculateItemTotal } from '../Utils/Cal'
+// Display helpers
+const round = (n) => Math.round(parseFloat(n) || 0);
+const inr = (n) => `₹ ${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(round(n))}`;
 const InvoiceTable = ({items}) => {
   return (
     <div className='overflow-auto'>
-        <table className='w-full border-collapse'>
+        <table className='w-full border-collapse rounded-xl overflow-hidden'>
             <thead>
-                <tr className='bg-slate-50'>
-                    <th className='text-left font-semibold text-sm text-slate-600 p-2.5 border-b border-slate-200'>Name</th>
-                    <th className='text-left font-semibold text-sm text-slate-600 p-2.5 border-b border-slate-200'>Quantity</th>
-                    <th className='text-left font-semibold text-sm text-slate-600 p-2.5 border-b border-slate-200'>Price</th>
-                    <th className='text-left font-semibold text-sm text-slate-600 p-2.5 border-b border-slate-200'>Discount</th>
-                    <th className='text-left font-semibold text-sm text-slate-600 p-2.5 border-b border-slate-200'>Subtotal</th>
-                    <th className='text-left font-semibold text-sm text-slate-600 p-2.5 border-b border-slate-200'>Total</th>
+                <tr className='bg-slate-50 text-slate-600'>
+                    <th className='text-left font-semibold text-sm p-3 border-b border-slate-200'>Name</th>
+                    <th className='text-left font-semibold text-sm p-3 border-b border-slate-200'>Quantity</th>
+                    <th className='text-left font-semibold text-sm p-3 border-b border-slate-200'>Price</th>
+                    <th className='text-left font-semibold text-sm p-3 border-b border-slate-200'>Discount</th>
+                    <th className='text-left font-semibold text-sm p-3 border-b border-slate-200'>Subtotal</th>
+                    <th className='text-left font-semibold text-sm p-3 border-b border-slate-200'>Tax (18%)</th>
+                    <th className='text-left font-semibold text-sm p-3 border-b border-slate-200'>Total</th>
                 </tr>
             </thead>
             <tbody>
-                {items.map((item, index)=>(
-                    <tr key={index} className='hover:bg-slate-50'>
-                        <td className='p-2.5 border-b border-slate-200 text-sm'>{item.name}</td>
-                        <td className='p-2.5 border-b border-slate-200 text-sm'>{item.qty}</td>
-                        <td className='p-2.5 border-b border-slate-200 text-sm'>{item.price}</td>
-                        <td className='p-2.5 border-b border-slate-200 text-sm'>{item.discount}</td>
-                        <td className='p-2.5 border-b border-slate-200 text-sm'>{calculateItemTotal(item.qty, item.price, item.discount)}</td>
-                        <td className='p-2.5 border-b border-slate-200 text-sm'>{calculateItemTotal(item.qty, item.price, item.discount)}</td>
+                {items.map((item, index)=>{
+                    const subtotal = calculateItemTotal(item.qty, item.price, item.discount);
+                    const tax = subtotal * 0.18;
+                    const total = subtotal + tax;
+                    return (
+                    <tr key={index} className='odd:bg-white even:bg-slate-50/50 hover:bg-slate-50'>
+                        <td className='p-3 border-b border-slate-200 text-sm'>{item.name}</td>
+                        <td className='p-3 border-b border-slate-200 text-sm'>{round(item.qty)}</td>
+                        <td className='p-3 border-b border-slate-200 text-sm'>{inr(item.price)}</td>
+                        <td className='p-3 border-b border-slate-200 text-sm'>{round(item.discount)}%</td>
+                        <td className='p-3 border-b border-slate-200 text-sm'>{inr(subtotal)}</td>
+                        <td className='p-3 border-b border-slate-200 text-sm'>{inr(tax)}</td>
+                        <td className='p-3 border-b border-slate-200 text-sm'>{inr(total)}</td>
                     </tr>
-                ))}
+                )})}
             </tbody>
         </table>
     </div>

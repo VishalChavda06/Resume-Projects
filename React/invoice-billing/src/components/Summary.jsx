@@ -3,6 +3,14 @@ import { calculateItemTotal, calculateSummary } from '../Utils/Cal'
 import * as XLSX from 'xlsx'
 
 const Summary = ({items}) => {
+  // Helper: round amounts to nearest whole number for display
+  const formatAmount = (n) => {
+    const num = parseFloat(n);
+    if (!Number.isFinite(num)) return 0;
+    return Math.round(num);
+  };
+  // Helper: format as Indian Rupees (no decimals as per requirement)
+  const formatINR = (n) => `₹ ${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(formatAmount(n))}`;
   // State to track printed items
   const [printedItems, setPrintedItems] = useState([]);
   // Pagination state (latest-first)
@@ -109,12 +117,29 @@ const Summary = ({items}) => {
     XLSX.writeFile(wb, filename);
   };
 
-  // Function to clear printed items
-  const clearPrintedItems = () => {
-    if (window.confirm('Are you sure you want to clear all printed items? This action cannot be undone.')) {
+  // Clear confirmation modal state
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [toast, setToast] = useState({ visible: false, message: '', tone: 'info', phase: 'enter' });
+  const showToast = (message, tone='info', duration=2500) => {
+    setToast({ visible: true, message, tone, phase: 'enter' });
+    window.setTimeout(() => setToast(prev => ({ ...prev, phase: 'show' })), 20);
+    window.setTimeout(() => setToast(prev => ({ ...prev, phase: 'exit' })), Math.max(500, duration - 250));
+    window.setTimeout(() => setToast({ visible: false, message: '', tone: 'info', phase: 'enter' }), duration);
+  };
+  const openClearConfirm = () => setShowConfirm(true);
+  const cancelClear = () => { setShowConfirm(false); showToast('Clear cancelled', 'neutral'); };
+  const confirmClear = () => {
+    // First show animated toast, then clear data when the animation ends
+    setShowConfirm(false);
+    const delay = 1500; // match toast duration below for consistency
+    showToast('All records deleted', 'success', delay);
+    window.setTimeout(() => {
       setPrintedItems([]);
       localStorage.removeItem('printedItems');
-    }
+      localStorage.removeItem('items');
+      try { window.dispatchEvent(new StorageEvent('storage', { key: 'items' })); } catch (_) {}
+      try { window.location.reload(); } catch (_) {}
+    }, delay);
   };
 
   return (
@@ -124,27 +149,27 @@ const Summary = ({items}) => {
         const { subtotal, tax, total } = calculateSummary(items);
         return (
           <div className='bg-white border border-slate-200 rounded-xl p-4 shadow-sm'>
-            <div className='flex items-center justify-between mb-3'>
+            <div className='flex flex-col gap-2 md:flex-row md:items-center md:justify-between mb-3'>
               <h2 className='text-lg font-semibold'>Bill Summary</h2>
               <button
                 onClick={() => printFullBill(items)}
-                className='px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-medium'
+                className='w-full md:w-auto px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-medium'
               >
                 🧾 Print Full Bill
               </button>
             </div>
-            <div className='grid grid-cols-3 gap-3'>
+            <div className='grid grid-cols-1 sm:grid-cols-3 gap-3'>
               <div className='p-3 rounded-lg bg-slate-50 border border-slate-200'>
                 <p className='text-xs text-slate-500'>Subtotal</p>
-                <p className='text-base font-semibold'>{subtotal.toFixed(2)}</p>
+                <p className='text-base font-semibold'>{formatINR(subtotal)}</p>
               </div>
               <div className='p-3 rounded-lg bg-slate-50 border border-slate-200'>
                 <p className='text-xs text-slate-500'>Tax (18%)</p>
-                <p className='text-base font-semibold'>{tax.toFixed(2)}</p>
+                <p className='text-base font-semibold'>{formatINR(tax)}</p>
               </div>
               <div className='p-3 rounded-lg bg-slate-50 border border-slate-200'>
                 <p className='text-xs text-slate-500'>Grand Total</p>
-                <p className='text-base font-semibold'>{total.toFixed(2)}</p>
+                <p className='text-base font-semibold'>{formatINR(total)}</p>
               </div>
             </div>
           </div>
@@ -154,21 +179,21 @@ const Summary = ({items}) => {
       <div className='bg-white border border-slate-200 rounded-xl p-4 shadow-sm'>
         <h2 className='text-lg font-semibold mb-3'>Export Management</h2>
         <div className='space-y-3'>
-          <div className='flex items-center justify-between'>
+          <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
             <span className='text-sm text-gray-600'>
               Printed Items: <strong>{printedItems.length}</strong>
             </span>
-            <div className='space-x-2'>
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 w-full sm:w-auto'>
               <button 
                 onClick={exportToExcel}
-                className='px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium'
+                className='w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium'
                 disabled={printedItems.length === 0}
               >
                 📊 Export to Excel
               </button>
               <button 
-                onClick={clearPrintedItems}
-                className='px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium'
+                onClick={openClearConfirm}
+                className='w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium'
                 disabled={printedItems.length === 0}
               >
                 🗑️ Clear Records
@@ -183,18 +208,49 @@ const Summary = ({items}) => {
         </div>
       </div>
 
+      {/* Confirm Clear Modal */}
+      {showConfirm && (
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/30'>
+          <div className='bg-white rounded-xl shadow-lg w-[90%] max-w-md p-5'>
+            <h3 className='text-lg font-semibold mb-2'>Clear all records?</h3>
+            <p className='text-sm text-slate-600 mb-4'>This will remove printed records and current items from your browser storage. This action cannot be undone.</p>
+            <div className='flex justify-end gap-2'>
+              <button onClick={cancelClear} className='px-4 py-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200'>Cancel</button>
+              <button onClick={confirmClear} className='px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700'>Yes, clear</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast with animation */}
+      {toast.visible && (
+        <div aria-live='polite' aria-atomic='true' className='fixed bottom-4 right-4 z-50'>
+          <div className={`relative px-4 py-2 rounded-lg shadow-lg text-white transition-all duration-300 ${toast.phase === 'enter' ? 'opacity-0 translate-y-3 scale-95' : ''} ${toast.phase === 'show' ? 'opacity-100 translate-y-0 scale-100' : ''} ${toast.phase === 'exit' ? 'opacity-0 translate-y-2' : ''} ${toast.tone === 'success' ? 'bg-emerald-600' : toast.tone === 'neutral' ? 'bg-slate-700' : 'bg-indigo-600'}`}>
+            <span className='mr-2'>
+              {toast.tone === 'success' ? '✅' : toast.tone === 'neutral' ? 'ℹ️' : '✨'}
+            </span>
+            {toast.message}
+            <div className='toast-bar'></div>
+          </div>
+          <style>{`
+            .toast-bar{position:absolute;left:0;bottom:0;height:3px;background:rgba(255,255,255,.7);animation:toastbar 2.5s linear forwards}
+            @keyframes toastbar{from{width:100%}to{width:0}}
+          `}</style>
+        </div>
+      )}
+
       {/* Pagination Controls */}
-      <div className='flex items-center justify-between'>
+      <div className='flex items-center justify-between gap-3'>
         <button
-          className='px-3 py-1.5 rounded-md bg-slate-100 text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed'
+          className='flex-1 sm:flex-none px-3 py-2 rounded-md bg-slate-100 text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed'
           onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
           disabled={currentPage <= 1}
         >
           ← Prev
         </button>
-        <span className='text-sm text-slate-600'>Page {currentPage} of {totalPages}</span>
+        <span className='text-sm text-slate-600 text-center flex-1'>Page {currentPage} of {totalPages}</span>
         <button
-          className='px-3 py-1.5 rounded-md bg-slate-100 text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed'
+          className='flex-1 sm:flex-none px-3 py-2 rounded-md bg-slate-100 text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed'
           onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
           disabled={currentPage >= totalPages}
         >
@@ -215,23 +271,52 @@ const Summary = ({items}) => {
           const tax = total * 0.18;
           const subTotal = total + tax;
           return (
-            <div key={`card-${originalIndex}`} id={`item-${originalIndex}`} className='bg-white border border-slate-200 rounded-xl p-4 shadow-sm'>
-              <h2 className='text-lg font-semibold mb-3'>Item {originalIndex + 1}</h2>
-              <div className='grid grid-cols-2 gap-x-4 gap-y-1.5'>
-                <p className='text-sm'><strong>Name:</strong> {ele.name}</p>
-                <p className='text-sm'><strong>Quantity:</strong> {ele.qty}</p>
-                <p className='text-sm'><strong>Price:</strong> {ele.price}</p>
-                <p className='text-sm'><strong>Discount:</strong> {ele.discount}</p>
-                <p className='text-sm'><strong>Total:</strong> {total}</p>
-                <p className='text-sm'><strong>Tax:</strong> {tax}</p>
-                <p className='text-sm'><strong>SubTotal:</strong> {subTotal}</p>
+            <div key={`card-${originalIndex}`} id={`item-${originalIndex}`} className='bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow'>
+              {/* Card Header */}
+              <div className='flex items-center justify-between mb-4'>
+                <h2 className='text-lg font-semibold'>Item {originalIndex + 1}</h2>
+                <span className='inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-sm font-medium border border-indigo-100'>
+                  Paid: <span className='font-semibold'>{formatINR(subTotal)}</span>
+                </span>
               </div>
-              <div className='mt-2.5 flex justify-end'>
+              {/* Card Body */}
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                <div className='space-y-2'>
+                  <div className='flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 border border-slate-200'>
+                    <span className='text-slate-500 text-sm'>Name</span>
+                    <span className='text-slate-800 text-sm font-medium'>{ele.name}</span>
+                  </div>
+                  <div className='flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 border border-slate-200'>
+                    <span className='text-slate-500 text-sm'>Price</span>
+                    <span className='text-slate-800 text-sm font-medium'>{formatINR(ele.price)}</span>
+                  </div>
+                  <div className='flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 border border-slate-200'>
+                    <span className='text-slate-500 text-sm'>Discount</span>
+                    <span className='text-slate-800 text-sm font-medium'>{ele.discount}%</span>
+                  </div>
+                </div>
+                <div className='space-y-2'>
+                  <div className='flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 border border-slate-200'>
+                    <span className='text-slate-500 text-sm'>Quantity</span>
+                    <span className='text-slate-800 text-sm font-medium'>{ele.qty}</span>
+                  </div>
+                  <div className='flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 border border-slate-200'>
+                    <span className='text-slate-500 text-sm'>Tax (18%)</span>
+                    <span className='text-slate-800 text-sm font-medium'>{formatINR(tax)}</span>
+                  </div>
+                  <div className='flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 border border-slate-200'>
+                    <span className='text-slate-500 text-sm'>SubTotal</span>
+                    <span className='text-slate-800 text-sm font-semibold'>{formatINR(subTotal)}</span>
+                  </div>
+                </div>
+              </div>
+              {/* Card Footer */}
+              <div className='mt-4 flex justify-end'>
                 <button 
-                  className='px-3.5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700' 
+                  className='inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 shadow-sm'
                   onClick={() => handlePrintAndTrack(originalIndex, items)}
                 >
-                  Print Bill
+                  <span role='img' aria-label='print'>🖨️</span> Print Bill
                 </button>
               </div>
             </div>
@@ -248,264 +333,16 @@ const printSingleBill=(index, items)=>{
     const printWindow = window.open('', 'print', 'height=700,width=900');
     if(!printWindow) return;
     printWindow.document.write("<html><head><title>Invoice Bill</title>");
-    printWindow.document.write(`
-        <style>
-            @media print {
-                body {
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                    margin: 0;
-                    padding: 20px;
-                    background: white;
-                    color: #000;
-                    font-size: 14px;
-                    line-height: 1.4;
-                }
-                
-                .print-header {
-                    text-align: center;
-                    margin-bottom: 30px;
-                    border-bottom: 2px solid #2563eb;
-                    padding-bottom: 15px;
-                }
-                
-                .print-title {
-                    font-size: 24px;
-                    font-weight: bold;
-                    color: #1e40af;
-                    margin: 0 0 5px 0;
-                }
-                
-                .print-date {
-                    font-size: 12px;
-                    color: #6b7280;
-                    margin: 0;
-                }
-                
-                .print-content {
-                    max-width: 700px;
-                    margin: 0 auto;
-                }
-                
-                .invoice-table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin: 20px 0;
-                    border: 1px solid #e5e7eb;
-                }
-                
-                .invoice-table th {
-                    background-color: #f8fafc;
-                    color: #374151;
-                    font-weight: 600;
-                    padding: 12px 8px;
-                    text-align: left;
-                    border: 1px solid #e5e7eb;
-                    font-size: 13px;
-                }
-                
-                .invoice-table td {
-                    padding: 10px 8px;
-                    border: 1px solid #e5e7eb;
-                    vertical-align: top;
-                }
-                
-                .invoice-table .text-right {
-                    text-align: right;
-                    font-family: 'Courier New', monospace;
-                }
-                
-                .invoice-table .text-center {
-                    text-align: center;
-                }
-                
-                .total-section {
-                    margin-top: 30px;
-                    margin-left: auto;
-                    width: 300px;
-                }
-                
-                .total-table {
-                    width: 100%;
-                    border-collapse: collapse;
-                }
-                
-                .total-table td {
-                    padding: 8px 12px;
-                    border: 1px solid #e5e7eb;
-                }
-                
-                .total-table .total-label {
-                    background-color: #f8fafc;
-                    font-weight: 600;
-                    color: #374151;
-                }
-                
-                .total-table .total-value {
-                    text-align: right;
-                    font-family: 'Courier New', monospace;
-                    font-weight: 600;
-                }
-                
-                .total-table .final-total {
-                    background-color: #1e40af;
-                    color: white;
-                    font-weight: bold;
-                    font-size: 16px;
-                }
-                
-                .total-table .final-total .total-value {
-                    color: white;
-                }
-                
-                .print-footer {
-                    margin-top: 40px;
-                    text-align: center;
-                    font-size: 12px;
-                    color: #6b7280;
-                    border-top: 1px solid #e5e7eb;
-                    padding-top: 15px;
-                }
-                
-                .print-button {
-                    display: none;
-                }
-            }
-            
-            @media screen {
-                body {
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                    padding: 20px;
-                    background: #f8fafc;
-                }
-                
-                .print-content {
-                    background: white;
-                    border-radius: 8px;
-                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-                    padding: 30px;
-                    max-width: 700px;
-                    margin: 0 auto;
-                }
-                
-                .print-header {
-                    text-align: center;
-                    margin-bottom: 30px;
-                    border-bottom: 2px solid #2563eb;
-                    padding-bottom: 15px;
-                }
-                
-                .print-title {
-                    font-size: 24px;
-                    font-weight: bold;
-                    color: #1e40af;
-                    margin: 0 0 5px 0;
-                }
-                
-                .print-date {
-                    font-size: 12px;
-                    color: #6b7280;
-                    margin: 0;
-                }
-                
-                .invoice-table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin: 20px 0;
-                    border: 1px solid #e5e7eb;
-                }
-                
-                .invoice-table th {
-                    background-color: #f8fafc;
-                    color: #374151;
-                    font-weight: 600;
-                    padding: 12px 8px;
-                    text-align: left;
-                    border: 1px solid #e5e7eb;
-                    font-size: 13px;
-                }
-                
-                .invoice-table td {
-                    padding: 10px 8px;
-                    border: 1px solid #e5e7eb;
-                    vertical-align: top;
-                }
-                
-                .invoice-table .text-right {
-                    text-align: right;
-                    font-family: 'Courier New', monospace;
-                }
-                
-                .invoice-table .text-center {
-                    text-align: center;
-                }
-                
-                .total-section {
-                    margin-top: 30px;
-                    margin-left: auto;
-                    width: 300px;
-                }
-                
-                .total-table {
-                    width: 100%;
-                    border-collapse: collapse;
-                }
-                
-                .total-table td {
-                    padding: 8px 12px;
-                    border: 1px solid #e5e7eb;
-                }
-                
-                .total-table .total-label {
-                    background-color: #f8fafc;
-                    font-weight: 600;
-                    color: #374151;
-                }
-                
-                .total-table .total-value {
-                    text-align: right;
-                    font-family: 'Courier New', monospace;
-                    font-weight: 600;
-                }
-                
-                .total-table .final-total {
-                    background-color: #1e40af;
-                    color: white;
-                    font-weight: bold;
-                    font-size: 16px;
-                }
-                
-                .total-table .final-total .total-value {
-                    color: white;
-                }
-                
-                .print-footer {
-                    margin-top: 40px;
-                    text-align: center;
-                    font-size: 12px;
-                    color: #6b7280;
-                    border-top: 1px solid #e5e7eb;
-                    padding-top: 15px;
-                }
-                
-                .print-button {
-                    display: inline-block;
-                    background: #2563eb;
-                    color: white;
-                    padding: 10px 20px;
-                    border: none;
-                    border-radius: 6px;
-                    cursor: pointer;
-                    font-size: 14px;
-                    margin-top: 20px;
-                }
-                
-                .print-button:hover {
-                    background: #1d4ed8;
-                }
-            }
-        </style>
-    `);
+    printWindow.document.write(`<link rel=\"stylesheet\" href=\"/print.css\" />`);
     printWindow.document.write("</head><body onload='window.print()'>");
+    
+    // Currency formatter for invoice with Indian grouping and no decimals (e.g., ₹ 30,798)
+    // Returns inline HTML with spans to keep symbol and amount perfectly aligned in one line
+    const inr2 = (n) => {
+      const num = parseFloat(n) || 0;
+      const full = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(num);
+      return `<span class=\"currency\"><span class=\"rs\">₹</span><span class=\"amt\">${full}</span></span>`;
+    };
     
     // Create a properly formatted print layout
     const currentDate = new Date().toLocaleDateString('en-US', {
@@ -566,11 +403,11 @@ const printSingleBill=(index, items)=>{
                             <td class="text-center">${index + 1}</td>
                             <td>${item.name}</td>
                             <td class="text-right">${item.qty}</td>
-                            <td class="text-right">${item.price.toFixed(2)}</td>
+                            <td class="text-right">${inr2(item.price)}</td>
                             <td class="text-right">${item.discount}%</td>
-                            <td class="text-right">${item.total.toFixed(2)}</td>
-                            <td class="text-right">${item.tax.toFixed(2)}</td>
-                            <td class="text-right">${item.subtotal.toFixed(2)}</td>
+                            <td class="text-right">${inr2(item.total)}</td>
+                            <td class="text-right">${inr2(item.tax)}</td>
+                            <td class="text-right">${inr2(item.subtotal)}</td>
                         </tr>
                     `).join('')}
                 </tbody>
@@ -580,15 +417,15 @@ const printSingleBill=(index, items)=>{
                 <table class="total-table">
                     <tr>
                         <td class="total-label">Subtotal:</td>
-                        <td class="total-value">${grandSubtotal.toFixed(2)}</td>
+                        <td class="total-value">${inr2(grandSubtotal)}</td>
                     </tr>
                     <tr>
                         <td class="total-label">Tax (18%):</td>
-                        <td class="total-value">${grandTax.toFixed(2)}</td>
+                        <td class="total-value">${inr2(grandTax)}</td>
                     </tr>
                     <tr class="final-total">
                         <td class="total-label">Total Amount:</td>
-                        <td class="total-value">${grandTotal.toFixed(2)}</td>
+                        <td class="total-value">${inr2(grandTotal)}</td>
                     </tr>
                 </table>
             </div>
@@ -610,20 +447,7 @@ const printFullBill = (items) => {
     const printWindow = window.open('', 'print', 'height=900,width=1100');
     if(!printWindow) return;
     printWindow.document.write("<html><head><title>Invoice - Full Bill</title>");
-    printWindow.document.write(`
-        <style>
-            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; }
-            .header { text-align:center; margin-bottom: 16px; }
-            .title { font-size: 22px; font-weight: 700; color: #1e40af; }
-            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-            th, td { border: 1px solid #e5e7eb; padding: 8px; font-size: 13px; }
-            th { background:#f8fafc; text-align: left; }
-            .right { text-align:right; font-family:'Courier New', monospace; }
-            .totals { margin-top: 20px; width: 360px; margin-left: auto; }
-            .totals td { border: 1px solid #e5e7eb; padding: 8px; }
-            .final { background:#1e40af; color:#fff; font-weight:700; }
-        </style>
-    `);
+    printWindow.document.write(`<link rel=\"stylesheet\" href=\"/print.css\" />`);
     printWindow.document.write("</head><body onload='window.print()'>");
 
     const { subtotal, tax, total } = calculateSummary(items);
