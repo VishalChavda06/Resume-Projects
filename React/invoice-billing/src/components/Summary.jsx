@@ -1,10 +1,20 @@
 import React, { useState, useEffect } from 'react'
-import { calculateItemTotal } from '../Utils/Cal'
+import { calculateItemTotal, calculateSummary } from '../Utils/Cal'
 import * as XLSX from 'xlsx'
 
 const Summary = ({items}) => {
   // State to track printed items
   const [printedItems, setPrintedItems] = useState([]);
+  // Pagination state (latest-first)
+  const pageSize = 3;
+  const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+  const [currentPage, setCurrentPage] = useState(totalPages);
+
+  // Whenever items change, jump to the last page to show latest items
+  useEffect(() => {
+    const newTotalPages = Math.max(1, Math.ceil(items.length / pageSize));
+    setCurrentPage(newTotalPages);
+  }, [items]);
 
   // Load printed items from localStorage on component mount
   useEffect(() => {
@@ -109,6 +119,37 @@ const Summary = ({items}) => {
 
   return (
     <div className='space-y-4'>
+      {/* Bill Summary (all items combined) */}
+      {items.length > 0 && (() => {
+        const { subtotal, tax, total } = calculateSummary(items);
+        return (
+          <div className='bg-white border border-slate-200 rounded-xl p-4 shadow-sm'>
+            <div className='flex items-center justify-between mb-3'>
+              <h2 className='text-lg font-semibold'>Bill Summary</h2>
+              <button
+                onClick={() => printFullBill(items)}
+                className='px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-medium'
+              >
+                🧾 Print Full Bill
+              </button>
+            </div>
+            <div className='grid grid-cols-3 gap-3'>
+              <div className='p-3 rounded-lg bg-slate-50 border border-slate-200'>
+                <p className='text-xs text-slate-500'>Subtotal</p>
+                <p className='text-base font-semibold'>{subtotal.toFixed(2)}</p>
+              </div>
+              <div className='p-3 rounded-lg bg-slate-50 border border-slate-200'>
+                <p className='text-xs text-slate-500'>Tax (18%)</p>
+                <p className='text-base font-semibold'>{tax.toFixed(2)}</p>
+              </div>
+              <div className='p-3 rounded-lg bg-slate-50 border border-slate-200'>
+                <p className='text-xs text-slate-500'>Grand Total</p>
+                <p className='text-base font-semibold'>{total.toFixed(2)}</p>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
       {/* Excel Export Section */}
       <div className='bg-white border border-slate-200 rounded-xl p-4 shadow-sm'>
         <h2 className='text-lg font-semibold mb-3'>Export Management</h2>
@@ -142,34 +183,61 @@ const Summary = ({items}) => {
         </div>
       </div>
 
-      {/* Items List */}
-      {items.map((ele,index)=>{
-        const total = calculateItemTotal(ele.qty, ele.price, ele.discount);
-        const tax = total * 0.18;
-        const subTotal = total + tax;
-        return (
-            <div key={index} id={`item-${index}`} className='bg-white border border-slate-200 rounded-xl p-4 shadow-sm'>
-                <h2 className='text-lg font-semibold mb-3'>Item {index + 1}</h2>
-                <div className='grid grid-cols-2 gap-x-4 gap-y-1.5'>
-                  <p className='text-sm'><strong>Name:</strong> {ele.name}</p>
-                  <p className='text-sm'><strong>Quantity:</strong> {ele.qty}</p>
-                  <p className='text-sm'><strong>Price:</strong> {ele.price}</p>
-                  <p className='text-sm'><strong>Discount:</strong> {ele.discount}</p>
-                  <p className='text-sm'><strong>Total:</strong> {total}</p>
-                  <p className='text-sm'><strong>Tax:</strong> {tax}</p>
-                  <p className='text-sm'><strong>SubTotal:</strong> {subTotal}</p>
-                </div>
-                <div className='mt-2.5 flex justify-end'>
-                  <button 
-                    className='px-3.5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700' 
-                    onClick={() => handlePrintAndTrack(index, items)}
-                  >
-                    Print Bill
-                  </button>
-                </div>
+      {/* Pagination Controls */}
+      <div className='flex items-center justify-between'>
+        <button
+          className='px-3 py-1.5 rounded-md bg-slate-100 text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed'
+          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          disabled={currentPage <= 1}
+        >
+          ← Prev
+        </button>
+        <span className='text-sm text-slate-600'>Page {currentPage} of {totalPages}</span>
+        <button
+          className='px-3 py-1.5 rounded-md bg-slate-100 text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed'
+          onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+          disabled={currentPage >= totalPages}
+        >
+          Next →
+        </button>
+      </div>
+
+      {/* Items List (latest first, 3 per page) */}
+      {(() => {
+        const reversed = [...items].reverse();
+        const start = (currentPage - 1) * pageSize;
+        const pageSlice = reversed.slice(start, start + pageSize);
+        return pageSlice.map((ele, i) => {
+          // Map back to original index for actions like print
+          const globalIndexFromReversed = start + i; // index in reversed array
+          const originalIndex = items.length - 1 - globalIndexFromReversed;
+          const total = calculateItemTotal(ele.qty, ele.price, ele.discount);
+          const tax = total * 0.18;
+          const subTotal = total + tax;
+          return (
+            <div key={`card-${originalIndex}`} id={`item-${originalIndex}`} className='bg-white border border-slate-200 rounded-xl p-4 shadow-sm'>
+              <h2 className='text-lg font-semibold mb-3'>Item {originalIndex + 1}</h2>
+              <div className='grid grid-cols-2 gap-x-4 gap-y-1.5'>
+                <p className='text-sm'><strong>Name:</strong> {ele.name}</p>
+                <p className='text-sm'><strong>Quantity:</strong> {ele.qty}</p>
+                <p className='text-sm'><strong>Price:</strong> {ele.price}</p>
+                <p className='text-sm'><strong>Discount:</strong> {ele.discount}</p>
+                <p className='text-sm'><strong>Total:</strong> {total}</p>
+                <p className='text-sm'><strong>Tax:</strong> {tax}</p>
+                <p className='text-sm'><strong>SubTotal:</strong> {subTotal}</p>
+              </div>
+              <div className='mt-2.5 flex justify-end'>
+                <button 
+                  className='px-3.5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700' 
+                  onClick={() => handlePrintAndTrack(originalIndex, items)}
+                >
+                  Print Bill
+                </button>
+              </div>
             </div>
-        )
-      })}
+          );
+        });
+      })()}
     </div>
   )
 }
@@ -531,6 +599,73 @@ const printSingleBill=(index, items)=>{
         </div>
     `);
     
+    printWindow.document.write("</body></html>");
+    printWindow.document.close();
+    printWindow.focus();
+}
+
+// Prints a full invoice containing all items in the current bill
+const printFullBill = (items) => {
+    if (!items || items.length === 0) return;
+    const printWindow = window.open('', 'print', 'height=900,width=1100');
+    if(!printWindow) return;
+    printWindow.document.write("<html><head><title>Invoice - Full Bill</title>");
+    printWindow.document.write(`
+        <style>
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; }
+            .header { text-align:center; margin-bottom: 16px; }
+            .title { font-size: 22px; font-weight: 700; color: #1e40af; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+            th, td { border: 1px solid #e5e7eb; padding: 8px; font-size: 13px; }
+            th { background:#f8fafc; text-align: left; }
+            .right { text-align:right; font-family:'Courier New', monospace; }
+            .totals { margin-top: 20px; width: 360px; margin-left: auto; }
+            .totals td { border: 1px solid #e5e7eb; padding: 8px; }
+            .final { background:#1e40af; color:#fff; font-weight:700; }
+        </style>
+    `);
+    printWindow.document.write("</head><body onload='window.print()'>");
+
+    const { subtotal, tax, total } = calculateSummary(items);
+
+    printWindow.document.write(`
+      <div class="header">
+        <div class="title">INVOICE - FULL BILL</div>
+        <div style="color:#6b7280; font-size:12px;">${new Date().toLocaleString()}</div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Discount (%)</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${items.map((it, idx) => {
+            const t = calculateItemTotal(it.qty, it.price, it.discount);
+            return `
+              <tr>
+                <td class="right">${idx + 1}</td>
+                <td>${it.name}</td>
+                <td class="right">${(parseFloat(it.qty)||0)}</td>
+                <td class="right">${(parseFloat(it.price)||0).toFixed(2)}</td>
+                <td class="right">${(parseFloat(it.discount)||0)}</td>
+                <td class="right">${t.toFixed(2)}</td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+      <table class="totals">
+        <tr><td>Subtotal</td><td class="right">${subtotal.toFixed(2)}</td></tr>
+        <tr><td>Tax (18%)</td><td class="right">${tax.toFixed(2)}</td></tr>
+        <tr class="final"><td>Total Amount</td><td class="right">${total.toFixed(2)}</td></tr>
+      </table>
+    `);
     printWindow.document.write("</body></html>");
     printWindow.document.close();
     printWindow.focus();
