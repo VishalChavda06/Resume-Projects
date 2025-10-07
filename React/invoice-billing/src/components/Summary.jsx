@@ -84,9 +84,7 @@ const Summary = ({items}) => {
       'Quantity': item.qty,
       'Price': item.price,
       'Discount (%)': item.discount,
-      'Total': item.total.toFixed(2),
-      'Tax (18%)': item.tax.toFixed(2),
-      'Subtotal': item.subTotal.toFixed(2)
+      'Amount': item.total.toFixed(2)
     }));
 
     // Create workbook and worksheet
@@ -102,9 +100,7 @@ const Summary = ({items}) => {
       { wch: 10 }, // Quantity
       { wch: 12 }, // Price
       { wch: 12 }, // Discount
-      { wch: 12 }, // Total
-      { wch: 12 }, // Tax
-      { wch: 12 }  // Subtotal
+      { wch: 12 }  // Amount
     ];
     ws['!cols'] = colWidths;
 
@@ -155,7 +151,7 @@ const Summary = ({items}) => {
               <h2 className='text-lg font-semibold'>Bill Summary</h2>
               <button
                 onClick={() => printFullBill(items)}
-                className='w-full md:w-auto px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-medium'
+                className='w-full md:w-auto px-4 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-200'
               >
                 🧾 Print Full Bill
               </button>
@@ -180,14 +176,14 @@ const Summary = ({items}) => {
             <div className='grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 w-full sm:w-auto'>
               <button 
                 onClick={exportToExcel}
-                className='w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium'
+                className='w-full px-4 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-md'
                 disabled={printedItems.length === 0}
               >
                 📊 Export to Excel
               </button>
               <button 
                 onClick={openClearConfirm}
-                className='w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium'
+                className='w-full px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-md'
                 disabled={printedItems.length === 0}
               >
                 🗑️ Clear Records
@@ -204,13 +200,23 @@ const Summary = ({items}) => {
 
       {/* Confirm Clear Modal */}
       {showConfirm && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/30'>
-          <div className='bg-white rounded-xl shadow-lg w-[90%] max-w-md p-5'>
-            <h3 className='text-lg font-semibold mb-2'>Clear all records?</h3>
-            <p className='text-sm text-slate-600 mb-4'>This will remove printed records and current items from your browser storage. This action cannot be undone.</p>
-            <div className='flex justify-end gap-2'>
-              <button onClick={cancelClear} className='px-4 py-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200'>Cancel</button>
-              <button onClick={confirmClear} className='px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700'>Yes, clear</button>
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4'>
+          <div className='bg-white rounded-xl shadow-lg w-full max-w-md p-5 sm:p-6'>
+            <h3 className='text-lg font-semibold mb-3'>Clear all records?</h3>
+            <p className='text-sm text-slate-600 mb-6 leading-relaxed'>This will remove printed records and current items from your browser storage. This action cannot be undone.</p>
+            <div className='flex flex-col sm:flex-row gap-3 sm:justify-end'>
+              <button 
+                onClick={cancelClear} 
+                className='w-full sm:w-auto px-4 py-3 rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 min-h-[44px] touch-manipulation font-semibold shadow-sm hover:shadow-md transition-all duration-200'
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={confirmClear} 
+                className='w-full sm:w-auto px-4 py-3 rounded-lg bg-red-600 text-white hover:bg-red-700 min-h-[44px] touch-manipulation font-semibold shadow-md hover:shadow-lg transition-all duration-200'
+              >
+                Yes, clear
+              </button>
             </div>
           </div>
         </div>
@@ -234,17 +240,17 @@ const Summary = ({items}) => {
       )}
 
       {/* Pagination Controls */}
-      <div className='flex items-center justify-between gap-3'>
+      <div className='flex items-center justify-between gap-2 sm:gap-3'>
         <button
-          className='flex-1 sm:flex-none px-3 py-2 rounded-md bg-slate-100 text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed'
+          className='flex-1 sm:flex-none px-4 py-3 sm:py-2.5 rounded-lg bg-slate-200 text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] touch-manipulation text-sm font-semibold hover:bg-slate-300 shadow-sm transition-all duration-200'
           onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
           disabled={currentPage <= 1}
         >
           ← Prev
         </button>
-        <span className='text-sm text-slate-600 text-center flex-1'>Page {currentPage} of {totalPages}</span>
+        <span className='text-sm text-slate-600 text-center flex-1 px-2 font-medium'>Page {currentPage} of {totalPages}</span>
         <button
-          className='flex-1 sm:flex-none px-3 py-2 rounded-md bg-slate-100 text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed'
+          className='flex-1 sm:flex-none px-4 py-3 sm:py-2.5 rounded-lg bg-slate-200 text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] touch-manipulation text-sm font-semibold hover:bg-slate-300 shadow-sm transition-all duration-200'
           onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
           disabled={currentPage >= totalPages}
         >
@@ -264,36 +270,36 @@ const Summary = ({items}) => {
           const total = calculateItemTotal(ele.qty, ele.price, ele.discount);
           const subTotal = total; // GST removed
           return (
-            <div key={`card-${originalIndex}`} id={`item-${originalIndex}`} className='bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow'>
+            <div key={`card-${originalIndex}`} id={`item-${originalIndex}`} className='bg-white border border-slate-200 rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow'>
               {/* Card Header */}
-              <div className='flex items-center justify-between mb-4'>
+              <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2'>
                 <h2 className='text-lg font-semibold truncate'>Bill No: {originalIndex + 1}</h2>
-                <span className='inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-sm font-medium border border-indigo-100'>
+                <span className='inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-50 text-indigo-700 text-sm font-medium border border-indigo-100 self-start sm:self-auto'>
                   Paid: <span className='font-semibold'>{formatINR(subTotal)}</span>
                 </span>
               </div>
               {/* Card Body */}
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+              <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4'>
                 <div className='space-y-2'>
-                  <div className='flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 border border-slate-200'>
+                  <div className='flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2.5 border border-slate-200'>
                     <span className='text-slate-500 text-sm'>Name</span>
-                    <span className='text-slate-800 text-sm font-medium'>{ele.name}</span>
+                    <span className='text-slate-800 text-sm font-medium truncate max-w-[120px]' title={ele.name}>{ele.name}</span>
                   </div>
-                  <div className='flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 border border-slate-200'>
+                  <div className='flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2.5 border border-slate-200'>
                     <span className='text-slate-500 text-sm'>Price</span>
                     <span className='text-slate-800 text-sm font-medium'>{formatINR(ele.price)}</span>
                   </div>
-                  <div className='flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 border border-slate-200'>
+                  <div className='flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2.5 border border-slate-200'>
                     <span className='text-slate-500 text-sm'>Discount</span>
                     <span className='text-slate-800 text-sm font-medium'>{ele.discount}%</span>
                   </div>
                 </div>
                 <div className='space-y-2'>
-                  <div className='flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 border border-slate-200'>
+                  <div className='flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2.5 border border-slate-200'>
                     <span className='text-slate-500 text-sm'>Quantity</span>
                     <span className='text-slate-800 text-sm font-medium'>{ele.qty}</span>
                   </div>
-                  <div className='flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 border border-slate-200'>
+                  <div className='flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2.5 border border-slate-200'>
                     <span className='text-slate-500 text-sm'>Amount</span>
                     <span className='text-slate-800 text-sm font-semibold'>{formatINR(subTotal)}</span>
                   </div>
@@ -302,7 +308,7 @@ const Summary = ({items}) => {
               {/* Card Footer */}
               <div className='mt-4 flex justify-end'>
                 <button 
-                  className='inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 shadow-sm'
+                  className='inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 shadow-md hover:shadow-lg text-sm font-semibold min-h-[44px] touch-manipulation transition-all duration-200'
                   onClick={() => handlePrintAndTrack(originalIndex, items)}
                 >
                   <span role='img' aria-label='print'>🖨️</span> Print Bill

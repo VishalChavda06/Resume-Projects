@@ -11,6 +11,19 @@ const InvoicePage = () => {
     setItems([...items, item]);
   }
 
+  //edit item logic
+  const editItem = (index, updatedItem) => {
+    const newItems = [...items];
+    newItems[index] = updatedItem;
+    setItems(newItems);
+  };
+
+  //delete item logic
+  const deleteItem = (index) => {
+    const newItems = items.filter((_, i) => i !== index);
+    setItems(newItems);
+  };
+
   //local storage
   useEffect(()=>{
     const savedItems = localStorage.getItem('items');
@@ -36,7 +49,7 @@ const InvoicePage = () => {
         <div className='space-y-5'>
           <div className='bg-white border border-slate-200 rounded-xl p-4 shadow-sm'>
             <h2 className='text-lg font-semibold mb-3'>Items</h2>
-            <InvoiceTable items={items} />
+            <InvoiceTable items={items} onEditItem={editItem} onDeleteItem={deleteItem} />
           </div>
           <div className='bg-white border border-slate-200 rounded-xl p-4 shadow-sm'>
             <h2 className='text-lg font-semibold mb-3'>Add Item</h2>
