@@ -15,8 +15,8 @@ const Summary = ({items}) => {
   const formatINR = (n) => `₹ ${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(formatAmount(n))}`;
   // State to track printed items
   const [printedItems, setPrintedItems] = useState([]);
-  // Pagination state (latest-first)
-  const pageSize = 3;
+  // Pagination state (latest-first) - increased page size for better UX
+  const pageSize = 6; // Increased from 3 to 6 cards per page
   const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
   const [currentPage, setCurrentPage] = useState(totalPages);
 
@@ -282,12 +282,14 @@ const Summary = ({items}) => {
         </button>
       </div>
 
-      {/* Items List (latest first, 3 per page) */}
-      {(() => {
-        const reversed = [...items].reverse();
-        const start = (currentPage - 1) * pageSize;
-        const pageSlice = reversed.slice(start, start + pageSize);
-        return pageSlice.map((ele, i) => {
+      {/* Items List (latest first, 6 per page) */}
+      <div className='max-h-[600px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100 pt-4 pb-4'>
+        <div className='space-y-4'>
+          {(() => {
+            const reversed = [...items].reverse();
+            const start = (currentPage - 1) * pageSize;
+            const pageSlice = reversed.slice(start, start + pageSize);
+            return pageSlice.map((ele, i) => {
           // Map back to original index for actions like print
           const globalIndexFromReversed = start + i; // index in reversed array
           const originalIndex = items.length - 1 - globalIndexFromReversed;
@@ -341,7 +343,9 @@ const Summary = ({items}) => {
             </div>
           );
         });
-      })()}
+        })()}
+        </div>
+      </div>
     </div>
   )
 }
