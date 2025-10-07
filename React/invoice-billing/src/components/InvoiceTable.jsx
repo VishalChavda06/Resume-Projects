@@ -8,9 +8,25 @@ const InvoiceTable = ({items, onEditItem, onDeleteItem}) => {
   const [editForm, setEditForm] = useState({ name: '', qty: '', price: '', discount: '' });
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
+  
+  // Pagination state for table
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // Show 5 items per page
+  const totalPages = Math.max(1, Math.ceil(items.length / itemsPerPage));
+  
+  // Calculate items for current page (latest first, but keep original order)
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  // Show latest items first by taking from the end of the array
+  const totalItems = items.length;
+  const fromEnd = totalItems - startIndex;
+  const toEnd = totalItems - startIndex - itemsPerPage;
+  const currentItems = items.slice(Math.max(0, toEnd), fromEnd).reverse();
 
   const handleEdit = (index, item) => {
-    setEditingIndex(index);
+    // Calculate actual index for the item in the original array
+    const actualIndex = totalItems - 1 - startIndex - index;
+    setEditingIndex(actualIndex);
     setEditForm({
       name: item.name,
       qty: item.qty,
@@ -33,7 +49,9 @@ const InvoiceTable = ({items, onEditItem, onDeleteItem}) => {
   };
 
   const handleDeleteClick = (index, item) => {
-    setItemToDelete({ index, item });
+    // Calculate actual index for the item in the original array
+    const actualIndex = totalItems - 1 - startIndex - index;
+    setItemToDelete({ index: actualIndex, item });
     setShowDeleteModal(true);
   };
 
@@ -62,13 +80,13 @@ const InvoiceTable = ({items, onEditItem, onDeleteItem}) => {
                     <th className='text-center font-semibold text-sm p-2 sm:p-3 border-b border-slate-200 min-w-[100px]'>Actions</th>
                 </tr>
             </thead>
-            <tbody>
-                {items.map((item, index)=>{
-                    const subtotal = calculateItemTotal(item.qty, item.price, item.discount);
-                    const total = subtotal; // GST removed
-                    return (
-                    <tr key={index} className='odd:bg-white even:bg-slate-50/50 hover:bg-slate-50'>
-                        {editingIndex === index ? (
+                <tbody>
+                    {currentItems.map((item, index)=>{
+                        const subtotal = calculateItemTotal(item.qty, item.price, item.discount);
+                        const total = subtotal; // GST removed
+                        return (
+                        <tr key={totalItems - 1 - startIndex - index} className='odd:bg-white even:bg-slate-50/50 hover:bg-slate-50'>
+                            {editingIndex === (totalItems - 1 - startIndex - index) ? (
                             <>
                                 <td className='p-2 sm:p-3 border-b border-slate-200'>
                                     <input
@@ -161,6 +179,76 @@ const InvoiceTable = ({items, onEditItem, onDeleteItem}) => {
                 )})}
             </tbody>
         </table>
+        
+        {/* Table Pagination */}
+        {totalPages > 1 && (
+          <div className='flex items-center justify-between mt-4 pt-4 border-t border-slate-200'>
+            <div className='text-sm text-slate-600'>
+              Showing {startIndex + 1} to {Math.min(endIndex, items.length)} of {items.length} items
+            </div>
+            <div className='flex items-center gap-2'>
+              <button
+                className='px-3 py-1.5 rounded-md bg-white border border-slate-300 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-medium hover:bg-slate-50 transition-colors'
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage <= 1}
+              >
+                First
+              </button>
+              <button
+                className='px-3 py-1.5 rounded-md bg-white border border-slate-300 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-medium hover:bg-slate-50 transition-colors'
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage <= 1}
+              >
+                ←
+              </button>
+              
+              {/* Page Numbers */}
+              <div className='flex items-center gap-1'>
+                {Array.from({ length: Math.min(3, totalPages) }, (_, i) => {
+                  let pageNum;
+                  if (totalPages <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 2) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 1) {
+                    pageNum = totalPages - 2 + i;
+                  } else {
+                    pageNum = currentPage - 1 + i;
+                  }
+                  
+                  return (
+                    <button
+                      key={pageNum}
+                      className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                        currentPage === pageNum
+                          ? 'bg-indigo-600 text-white'
+                          : 'bg-white border border-slate-300 text-slate-600 hover:bg-slate-50'
+                      }`}
+                      onClick={() => setCurrentPage(pageNum)}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+              </div>
+              
+              <button
+                className='px-3 py-1.5 rounded-md bg-white border border-slate-300 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-medium hover:bg-slate-50 transition-colors'
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage >= totalPages}
+              >
+                →
+              </button>
+              <button
+                className='px-3 py-1.5 rounded-md bg-white border border-slate-300 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-medium hover:bg-slate-50 transition-colors'
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage >= totalPages}
+              >
+                Last
+              </button>
+            </div>
+          </div>
+        )}
         
         {/* Delete Confirmation Modal */}
         {showDeleteModal && (

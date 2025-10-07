@@ -15,15 +15,14 @@ const Summary = ({items}) => {
   const formatINR = (n) => `₹ ${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(formatAmount(n))}`;
   // State to track printed items
   const [printedItems, setPrintedItems] = useState([]);
-  // Pagination state (latest-first) - increased page size for better UX
-  const pageSize = 6; // Increased from 3 to 6 cards per page
+  // Pagination state (latest-first) - configurable page size
+  const pageSize = 4; // 4 cards per page for better mobile experience
   const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
-  const [currentPage, setCurrentPage] = useState(totalPages);
+  const [currentPage, setCurrentPage] = useState(1); // Always start on page 1
 
-  // Whenever items change, jump to the last page to show latest items
+  // Whenever items change, go to page 1 to show latest items first
   useEffect(() => {
-    const newTotalPages = Math.max(1, Math.ceil(items.length / pageSize));
-    setCurrentPage(newTotalPages);
+    setCurrentPage(1); // Always show latest items first
   }, [items]);
 
   // Load printed items from localStorage on component mount
@@ -263,36 +262,88 @@ const Summary = ({items}) => {
         </div>
       )}
 
-      {/* Pagination Controls */}
-      <div className='flex items-center justify-between gap-2 sm:gap-3'>
+      {/* Clean Pagination Controls */}
+      <div className='flex items-center justify-center gap-2 py-4'>
         <button
-          className='flex-1 sm:flex-none px-4 py-3 sm:py-2.5 rounded-lg bg-slate-200 text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] touch-manipulation text-sm font-semibold hover:bg-slate-300 shadow-sm transition-all duration-200'
+          className='px-3 py-2 rounded-md bg-white border border-slate-300 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-medium hover:bg-slate-50 transition-colors'
+          onClick={() => setCurrentPage(1)}
+          disabled={currentPage <= 1}
+        >
+          First
+        </button>
+        <button
+          className='px-3 py-2 rounded-md bg-white border border-slate-300 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-medium hover:bg-slate-50 transition-colors'
           onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
           disabled={currentPage <= 1}
         >
-          ← Prev
+          ←
         </button>
-        <span className='text-sm text-slate-600 text-center flex-1 px-2 font-medium'>Page {currentPage} of {totalPages}</span>
+        
+        {/* Page Numbers */}
+        <div className='flex items-center gap-1'>
+          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+            let pageNum;
+            if (totalPages <= 5) {
+              pageNum = i + 1;
+            } else if (currentPage <= 3) {
+              pageNum = i + 1;
+            } else if (currentPage >= totalPages - 2) {
+              pageNum = totalPages - 4 + i;
+            } else {
+              pageNum = currentPage - 2 + i;
+            }
+            
+            return (
+              <button
+                key={pageNum}
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  currentPage === pageNum
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-white border border-slate-300 text-slate-600 hover:bg-slate-50'
+                }`}
+                onClick={() => setCurrentPage(pageNum)}
+              >
+                {pageNum}
+              </button>
+            );
+          })}
+        </div>
+        
         <button
-          className='flex-1 sm:flex-none px-4 py-3 sm:py-2.5 rounded-lg bg-slate-200 text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] touch-manipulation text-sm font-semibold hover:bg-slate-300 shadow-sm transition-all duration-200'
+          className='px-3 py-2 rounded-md bg-white border border-slate-300 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-medium hover:bg-slate-50 transition-colors'
           onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
           disabled={currentPage >= totalPages}
         >
-          Next →
+          →
         </button>
+        <button
+          className='px-3 py-2 rounded-md bg-white border border-slate-300 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-medium hover:bg-slate-50 transition-colors'
+          onClick={() => setCurrentPage(totalPages)}
+          disabled={currentPage >= totalPages}
+        >
+          Last
+        </button>
+        
+        {/* Page Info */}
+        <div className='ml-4 text-sm text-slate-500'>
+          Page {currentPage} of {totalPages}
+        </div>
       </div>
 
-      {/* Items List (latest first, 6 per page) */}
+      {/* Items List (latest first, 4 per page) */}
       <div className='max-h-[600px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100 pt-4 pb-4'>
         <div className='space-y-4'>
           {(() => {
-            const reversed = [...items].reverse();
+            // Show latest items first but in logical order
             const start = (currentPage - 1) * pageSize;
-            const pageSlice = reversed.slice(start, start + pageSize);
+            const end = start + pageSize;
+            const totalItems = items.length;
+            const fromEnd = totalItems - start;
+            const toEnd = totalItems - start - pageSize;
+            const pageSlice = items.slice(Math.max(0, toEnd), fromEnd).reverse();
             return pageSlice.map((ele, i) => {
           // Map back to original index for actions like print
-          const globalIndexFromReversed = start + i; // index in reversed array
-          const originalIndex = items.length - 1 - globalIndexFromReversed;
+          const originalIndex = totalItems - 1 - start - i;
           const total = calculateItemTotal(ele.qty, ele.price, ele.discount);
           const subTotal = total; // GST removed
           return (
