@@ -6,6 +6,8 @@ const inr = (n) => `₹ ${new Intl.NumberFormat('en-IN', { maximumFractionDigits
 const InvoiceTable = ({items, onEditItem, onDeleteItem}) => {
   const [editingIndex, setEditingIndex] = useState(null);
   const [editForm, setEditForm] = useState({ name: '', qty: '', price: '', discount: '' });
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   const handleEdit = (index, item) => {
     setEditingIndex(index);
@@ -30,10 +32,22 @@ const InvoiceTable = ({items, onEditItem, onDeleteItem}) => {
     setEditForm({ name: '', qty: '', price: '', discount: '' });
   };
 
-  const handleDelete = (index) => {
-    if (window.confirm('Are you sure you want to delete this item?')) {
-      onDeleteItem(index);
+  const handleDeleteClick = (index, item) => {
+    setItemToDelete({ index, item });
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    if (itemToDelete) {
+      onDeleteItem(itemToDelete.index);
+      setShowDeleteModal(false);
+      setItemToDelete(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setItemToDelete(null);
   };
   return (
     <div className='overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0'>
@@ -133,7 +147,7 @@ const InvoiceTable = ({items, onEditItem, onDeleteItem}) => {
                                             ✏️ Edit
                                         </button>
                                         <button
-                                            onClick={() => handleDelete(index)}
+                                            onClick={() => handleDeleteClick(index, item)}
                                             className='px-3 py-1.5 bg-red-600 text-white text-xs rounded-md hover:bg-red-700 shadow-sm font-medium'
                                             title='Delete item'
                                         >
@@ -147,6 +161,33 @@ const InvoiceTable = ({items, onEditItem, onDeleteItem}) => {
                 )})}
             </tbody>
         </table>
+        
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && (
+          <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4'>
+            <div className='bg-white rounded-xl shadow-lg w-full max-w-md p-5 sm:p-6'>
+              <h3 className='text-lg font-semibold mb-3'>Delete Item</h3>
+              <p className='text-sm text-slate-600 mb-6 leading-relaxed'>
+                Are you sure you want to delete <strong>"{itemToDelete?.item?.name}"</strong>? 
+                This action cannot be undone.
+              </p>
+              <div className='flex flex-col sm:flex-row gap-3 sm:justify-end'>
+                <button 
+                  onClick={cancelDelete} 
+                  className='w-full sm:w-auto px-4 py-3 rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 min-h-[44px] touch-manipulation font-semibold shadow-sm hover:shadow-md transition-all duration-200'
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={confirmDelete} 
+                  className='w-full sm:w-auto px-4 py-3 rounded-lg bg-red-600 text-white hover:bg-red-700 min-h-[44px] touch-manipulation font-semibold shadow-md hover:shadow-lg transition-all duration-200'
+                >
+                  Yes, Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
     </div>
   )
 }
