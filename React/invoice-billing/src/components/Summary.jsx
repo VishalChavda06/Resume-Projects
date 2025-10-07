@@ -53,19 +53,39 @@ const Summary = ({items}) => {
     // Add to printed items with timestamp
     const itemToPrint = items[index];
     const total = calculateItemTotal(itemToPrint.qty, itemToPrint.price, itemToPrint.discount);
-    const tax = total * 0.18;
-    const subTotal = total + tax;
+    
+    // Create a unique key for this item (name + qty + price + discount)
+    const itemKey = `${itemToPrint.name}-${itemToPrint.qty}-${itemToPrint.price}-${itemToPrint.discount}`;
+    
+    // Check if this exact item already exists in printedItems
+    const existingItemIndex = printedItems.findIndex(printedItem => {
+      const existingKey = `${printedItem.name}-${printedItem.qty}-${printedItem.price}-${printedItem.discount}`;
+      return existingKey === itemKey;
+    });
     
     const printedItem = {
       ...itemToPrint,
       total: total,
-      tax: tax,
-      subTotal: subTotal,
       printedAt: new Date().toISOString(),
-      invoiceNumber: `INV-${Date.now()}-${index + 1}`
+      invoiceNumber: `INV-${Date.now()}-${index + 1}`,
+      printCount: 1 // Track how many times this item was printed
     };
     
-    setPrintedItems(prev => [...prev, printedItem]);
+    if (existingItemIndex !== -1) {
+      // Update existing item with new print info and increment count
+      setPrintedItems(prev => {
+        const updated = [...prev];
+        updated[existingItemIndex] = {
+          ...printedItem,
+          printCount: (prev[existingItemIndex].printCount || 1) + 1,
+          lastPrintedAt: new Date().toISOString()
+        };
+        return updated;
+      });
+    } else {
+      // Add new item
+      setPrintedItems(prev => [...prev, printedItem]);
+    }
   };
 
   // Function to export printed items to Excel
@@ -84,7 +104,9 @@ const Summary = ({items}) => {
       'Quantity': item.qty,
       'Price': item.price,
       'Discount (%)': item.discount,
-      'Amount': item.total.toFixed(2)
+      'Amount': item.total.toFixed(2),
+      'Print Count': item.printCount || 1,
+      'Last Printed': item.lastPrintedAt ? new Date(item.lastPrintedAt).toLocaleString() : new Date(item.printedAt).toLocaleString()
     }));
 
     // Create workbook and worksheet
@@ -100,7 +122,9 @@ const Summary = ({items}) => {
       { wch: 10 }, // Quantity
       { wch: 12 }, // Price
       { wch: 12 }, // Discount
-      { wch: 12 }  // Amount
+      { wch: 12 }, // Amount
+      { wch: 10 }, // Print Count
+      { wch: 18 }  // Last Printed
     ];
     ws['!cols'] = colWidths;
 
