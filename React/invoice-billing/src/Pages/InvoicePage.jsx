@@ -28,6 +28,7 @@ const InvoicePage = () => {
   const [selectedBillDisplayNumber, setSelectedBillDisplayNumber] = useState(0);
   const [printedBills, setPrintedBills] = useState([]);
   const [showClearAllModal, setShowClearAllModal] = useState(false);
+  const [showClearBillsModal, setShowClearBillsModal] = useState(false);
 
   // Add to catalog
   const addItem=(item)=>{
@@ -245,6 +246,22 @@ const InvoicePage = () => {
     }
   };
 
+  // Clear only bills (keep catalog items)
+  const clearAllBills = () => {
+    try {
+      // Clear only bills and printed bills from localStorage
+      localStorage.removeItem('bills');
+      localStorage.removeItem('currentBillIndex');
+      localStorage.removeItem('printedBills');
+    } catch (_) {}
+    // Reset bills state but keep catalog
+    setBills([[]]);
+    setCurrentBillIndex(0);
+    setPrintedBills([]);
+    setShowClearBillsModal(false);
+    showSuccess('All bills cleared. Catalog items preserved.');
+  };
+
   // Clear all application records (catalog, bills, indices, printed bills)
   const clearAllRecords = () => {
     try {
@@ -421,14 +438,30 @@ const InvoicePage = () => {
                 Export Excel File
               </button>
               
-              {/* Clear Button */}
-              <button
-                onClick={() => setShowClearAllModal(true)}
-                className='w-full mt-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium text-sm transition-colors flex items-center justify-center gap-2'
-              >
-                <span>🗑️</span>
-                Clear Records
-              </button>
+              {/* Clear Buttons */}
+              <div className='space-y-2 mt-2'>
+                <button
+                  onClick={clearPrintedBills}
+                  className='w-full px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 font-medium text-sm transition-colors flex items-center justify-center gap-2'
+                >
+                  <span>📋</span>
+                  Clear Printed History
+                </button>
+                <button
+                  onClick={() => setShowClearBillsModal(true)}
+                  className='w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium text-sm transition-colors flex items-center justify-center gap-2'
+                >
+                  <span>🗑️</span>
+                  Clear All Bills
+                </button>
+                <button
+                  onClick={() => setShowClearAllModal(true)}
+                  className='w-full px-4 py-2 bg-red-800 text-white rounded-lg hover:bg-red-900 font-medium text-sm transition-colors flex items-center justify-center gap-2'
+                >
+                  <span>⚠️</span>
+                  Reset Everything
+                </button>
+              </div>
               
               {printedBills.length > 0 && (
                 <div className='mt-3 text-xs text-slate-500 text-center'>
@@ -574,14 +607,41 @@ const InvoicePage = () => {
             )}
           </main>
         </div>
+        {/* Clear Bills Modal */}
+        {showClearBillsModal && (
+          <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4'>
+            <div className='bg-white rounded-xl shadow-xl w-full max-w-md p-6'>
+              <h3 className='text-lg font-semibold text-slate-900 mb-2'>Clear all bills?</h3>
+              <p className='text-sm text-slate-600 mb-4'>This will remove all bills and printed history, but keep your catalog items safe. This action cannot be undone.</p>
+              <div className='bg-green-50 border border-green-200 text-green-800 text-xs rounded-lg p-3 mb-4'>
+                ✅ Your catalog items will be preserved and can be used to create new bills.
+              </div>
+              <div className='flex flex-col sm:flex-row gap-3 sm:justify-end'>
+                <button
+                  onClick={() => setShowClearBillsModal(false)}
+                  className='px-4 py-2 rounded-lg bg-slate-200 text-slate-800 hover:bg-slate-300 font-semibold'
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={clearAllBills}
+                  className='px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 font-semibold'
+                >
+                  Yes, clear bills
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Clear All Records Modal */}
         {showClearAllModal && (
           <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4'>
             <div className='bg-white rounded-xl shadow-xl w-full max-w-md p-6'>
-              <h3 className='text-lg font-semibold text-slate-900 mb-2'>Clear all records?</h3>
-              <p className='text-sm text-slate-600 mb-4'>This will remove all saved data including catalog items, all bills, printed bill history, and preferences from this browser. This action cannot be undone.</p>
-              <div className='bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs rounded-lg p-3 mb-4'>
-                Tip: If you only want to reset the printed history, use Export Management &gt; Clear Records instead.
+              <h3 className='text-lg font-semibold text-slate-900 mb-2'>Reset everything?</h3>
+              <p className='text-sm text-slate-600 mb-4'>This will remove ALL data including catalog items, bills, and printed history. This action cannot be undone.</p>
+              <div className='bg-red-50 border border-red-200 text-red-800 text-xs rounded-lg p-3 mb-4'>
+                ⚠️ This will delete your catalog items permanently. Consider using "Clear All Bills" instead to keep your catalog.
               </div>
               <div className='flex flex-col sm:flex-row gap-3 sm:justify-end'>
                 <button
@@ -592,9 +652,9 @@ const InvoicePage = () => {
                 </button>
                 <button
                   onClick={clearAllRecords}
-                  className='px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 font-semibold'
+                  className='px-4 py-2 rounded-lg bg-red-800 text-white hover:bg-red-900 font-semibold'
                 >
-                  Yes, clear everything
+                  Yes, reset everything
                 </button>
               </div>
             </div>
