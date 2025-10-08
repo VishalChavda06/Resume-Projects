@@ -5,8 +5,7 @@ const ItemForm = ({addItem}) => {
 
     const [name , setName] = useState('');
     const [price , setPrice] = useState('');
-    const [quantity , setQuantity] = useState('');
-    const [discount , setDiscount] = useState('');
+    // Catalog mode: only name and price
     const [errors, setErrors] = useState({});
 
     const validateForm = () => {
@@ -24,15 +23,7 @@ const ItemForm = ({addItem}) => {
             newErrors.price = 'Price must be greater than 0';
         }
         
-        // Validate quantity
-        if (!quantity || quantity <= 0) {
-            newErrors.quantity = 'Quantity must be greater than 0';
-        }
-        
-        // Validate discount
-        if (discount < 0 || discount > 100) {
-            newErrors.discount = 'Discount must be between 0 and 100';
-        }
+        // No quantity/discount at catalog creation time
         
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -49,20 +40,14 @@ const ItemForm = ({addItem}) => {
             return;
         }
         
-        const newItem ={
-            name: name.trim(),
-            qty: Number(quantity),
-            price: Number(price),
-            discount: Number(discount) || 0
-        }
+        const newItem = { name: name.trim(), price: Number(price) };
         
         addItem(newItem);
         
         // Reset form fields after successful submission
         setName('');
         setPrice('');
-        setQuantity('');
-        setDiscount('');
+        // qty/discount not used here
         setErrors({});
     }
 
@@ -103,39 +88,7 @@ const ItemForm = ({addItem}) => {
             />
             {errors.price && <p className='text-red-500 text-xs'>{errors.price}</p>}
           </label>
-          <label className='space-y-1.5 text-sm'>
-            <span>Quantity *</span>
-            <input 
-              type="number" 
-              placeholder='Item Quantity' 
-              min="1"
-              className={`w-full h-9 px-2.5 border rounded-lg focus:outline-none focus:ring-1 ${
-                errors.quantity 
-                  ? 'border-red-500 focus:border-red-500 focus:ring-red-500' 
-                  : 'border-slate-300 focus:border-indigo-500 focus:ring-indigo-500'
-              }`}
-              value={quantity} 
-              onChange={(e)=>setQuantity(e.target.value)} 
-            />
-            {errors.quantity && <p className='text-red-500 text-xs'>{errors.quantity}</p>}
-          </label>
-          <label className='space-y-1.5 text-sm'>
-            <span>Discount (%)</span>
-            <input 
-              type="number" 
-              placeholder='Item Discount' 
-              min="0"
-              max="100"
-              className={`w-full h-9 px-2.5 border rounded-lg focus:outline-none focus:ring-1 ${
-                errors.discount 
-                  ? 'border-red-500 focus:border-red-500 focus:ring-red-500' 
-                  : 'border-slate-300 focus:border-indigo-500 focus:ring-indigo-500'
-              }`}
-              value={discount} 
-              onChange={(e)=>setDiscount(e.target.value)} 
-            />
-            {errors.discount && <p className='text-red-500 text-xs'>{errors.discount}</p>}
-          </label>
+          {/* Quantity and Discount are chosen when adding to bill */}
         </div>
         <div className='flex justify-end'>
           <button type='submit' className='px-3.5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700'>Add Item</button>
