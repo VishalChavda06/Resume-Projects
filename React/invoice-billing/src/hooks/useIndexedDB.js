@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import indexedDBService from '../services/IndexedDBService';
-import migrationService from '../utils/MigrationService';
+import migrationService from '../Utils/MigrationService.jsx';
 
 export const useIndexedDB = () => {
   const [isInitialized, setIsInitialized] = useState(false);

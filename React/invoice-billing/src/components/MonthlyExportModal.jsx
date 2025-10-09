@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogHeader, DialogFooter } from './ui/Dialog';
-import exportService from '../utils/ExportService';
+import exportService from '../Utils/ExportService.jsx';
 
 const MonthlyExportModal = ({ open, onClose }) => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
