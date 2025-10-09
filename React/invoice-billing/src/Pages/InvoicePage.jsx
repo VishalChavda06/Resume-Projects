@@ -6,81 +6,184 @@ import { Dialog, DialogHeader, DialogFooter } from '../components/ui/Dialog'
 import BillCard from '../components/BillCard'
 import CreateBillModal from '../components/CreateBillModal'
 import ViewBillModal from '../components/ViewBillModal'
+import MonthlyExportModal from '../components/MonthlyExportModal'
 import printCssUrl from '../print.css?url'
 import { calculateSummary } from '../Utils/Cal'
 import * as XLSX from 'xlsx'
 import { useToast } from '../contexts/ToastContext'
+import useIndexedDB from '../hooks/useIndexedDB'
+import dataStructureTest from '../utils/DataStructureTest'
 
 const InvoicePage = () => {
   const { showSuccess, showError, showInfo, showWarning } = useToast();
+  
+  // IndexedDB hook
+  const {
+    isInitialized,
+    isLoading,
+    error,
+    migrationStatus,
+    performMigration,
+    getCatalogItems,
+    addCatalogItem,
+    updateCatalogItem,
+    deleteCatalogItem,
+    getBills,
+    addBill,
+    updateBill,
+    deleteBill,
+    clearAllBills,
+    getPrintedBills,
+    addPrintedBill,
+    clearPrintedBills,
+    getSetting,
+    setSetting,
+    getStats,
+    exportData,
+    clearAllData
+  } = useIndexedDB();
 
-  // Catalog items (name + price only)
+  // Local state
   const [catalogItems, setCatalogItems] = useState([]);
-  // Bills: array of bill arrays (each bill holds its items)
   const [bills, setBills] = useState([]);
   const [currentBillIndex, setCurrentBillIndex] = useState(0);
   const [showCreateBill, setShowCreateBill] = useState(false);
   const [showCreateItem, setShowCreateItem] = useState(false);
   const [showViewBill, setShowViewBill] = useState(false);
   const [selectedBillIndex, setSelectedBillIndex] = useState(null);
-  const [isInitialized, setIsInitialized] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedBillDisplayNumber, setSelectedBillDisplayNumber] = useState(0);
   const [printedBills, setPrintedBills] = useState([]);
   const [showClearAllModal, setShowClearAllModal] = useState(false);
   const [showClearBillsModal, setShowClearBillsModal] = useState(false);
+  const [showMigrationModal, setShowMigrationModal] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+
+  // Data loading functions
+  const loadCatalogItems = async () => {
+    try {
+      const items = await getCatalogItems();
+      setCatalogItems(items);
+    } catch (error) {
+      console.error('Failed to load catalog items:', error);
+      showError('Failed to load catalog items');
+    }
+  };
+
+  const loadBills = async () => {
+    try {
+      const billsData = await getBills();
+      // Ensure we always have at least one empty bill for the UI
+      if (billsData.length === 0) {
+        setBills([{ id: null, billNumber: 1, items: [], totalAmount: 0, createdAt: new Date().toISOString() }]);
+      } else {
+        setBills(billsData);
+      }
+    } catch (error) {
+      console.error('Failed to load bills:', error);
+      showError('Failed to load bills');
+    }
+  };
+
+  const loadPrintedBills = async () => {
+    try {
+      const printedData = await getPrintedBills();
+      setPrintedBills(printedData);
+    } catch (error) {
+      console.error('Failed to load printed bills:', error);
+      showError('Failed to load printed bills');
+    }
+  };
+
+  const loadCurrentBillIndex = async () => {
+    try {
+      const index = await getSetting('currentBillIndex');
+      if (index !== null) {
+        setCurrentBillIndex(index);
+      }
+    } catch (error) {
+      console.error('Failed to load current bill index:', error);
+    }
+  };
 
   // Add to catalog
-  const addItem=(item)=>{
-    setCatalogItems(prevItems => [...prevItems, item]);
-    showSuccess(`Item "${item.name}" added to catalog successfully!`);
+  const addItem = async (item) => {
+    try {
+      await addCatalogItem(item);
+      await loadCatalogItems();
+      showSuccess(`Item "${item.name}" added to catalog successfully!`);
+    } catch (error) {
+      showError(`Failed to add item: ${error.message}`);
+    }
   }
 
 
   //edit item logic
-  const editItem = (index, updatedItem) => {
-    setBills(prev => {
-      const all = [...prev];
-      const cur = [...all[currentBillIndex]];
-      cur[index] = updatedItem;
-      all[currentBillIndex] = cur;
-      return all;
-    });
-    showSuccess(`Item "${updatedItem.name}" updated successfully!`);
+  const editItem = async (index, updatedItem) => {
+    try {
+      const currentBill = bills[currentBillIndex];
+      if (currentBill && currentBill.id) {
+        const updatedItems = [...currentBill.items];
+        updatedItems[index] = updatedItem;
+        await updateBill(currentBill.id, { ...currentBill, items: updatedItems });
+        await loadBills();
+        showSuccess(`Item "${updatedItem.name}" updated successfully!`);
+      }
+    } catch (error) {
+      showError(`Failed to update item: ${error.message}`);
+    }
   };
 
   //delete item logic
-  const deleteItem = (index) => {
-    const itemToDelete = bills[currentBillIndex]?.[index];
-    setBills(prev => {
-      const all = [...prev];
-      const cur = all[currentBillIndex].filter((_, i) => i !== index);
-      all[currentBillIndex] = cur;
-      return all;
-    });
-    if (itemToDelete) {
-      showSuccess(`Item "${itemToDelete.name}" removed from bill!`);
+  const deleteItem = async (index) => {
+    try {
+      const currentBill = bills[currentBillIndex];
+      if (currentBill && currentBill.id) {
+        const itemToDelete = currentBill.items[index];
+        const updatedItems = currentBill.items.filter((_, i) => i !== index);
+        await updateBill(currentBill.id, { ...currentBill, items: updatedItems });
+        await loadBills();
+        if (itemToDelete) {
+          showSuccess(`Item "${itemToDelete.name}" removed from bill!`);
+        }
+      }
+    } catch (error) {
+      showError(`Failed to delete item: ${error.message}`);
     }
   };
 
 
-  const addNewBill = () => {
-    setBills(prev => {
-      // if there is exactly one empty bill, replace it instead of adding another
-      if (prev.length === 1 && (prev[0]?.length || 0) === 0) {
-        return [[]];
+  const addNewBill = async () => {
+    try {
+      // Check if we have an empty bill to reuse
+      const hasEmptyBill = bills.length === 1 && (bills[0]?.items?.length || 0) === 0;
+      
+      if (!hasEmptyBill) {
+        // Create new empty bill
+        await addBill({
+          billNumber: bills.length + 1,
+          items: [],
+          createdAt: new Date().toISOString()
+        });
+        await loadBills();
+        // Set current bill index to the new bill (last index)
+        setCurrentBillIndex(bills.length);
+        await setSetting('currentBillIndex', bills.length);
+      } else {
+        // Reuse existing empty bill
+        setCurrentBillIndex(0);
+        await setSetting('currentBillIndex', 0);
       }
-      return [...prev, []];
-    });
-    setCurrentBillIndex(i => {
-      // if starting from 0 with an empty bill, stay at 0
-      if (bills.length === 1 && (bills[0]?.length || 0) === 0) return 0;
-      return i + 1;
-    });
+    } catch (error) {
+      showError(`Failed to create new bill: ${error.message}`);
+    }
   };
 
   // Calculate bill total
   const calculateBillTotal = (billItems) => {
+    if (!Array.isArray(billItems)) {
+      return 0;
+    }
     return billItems.reduce((sum, item) => sum + (item.qty * item.price * (1 - (item.discount || 0) / 100)), 0);
   };
 
@@ -90,49 +193,44 @@ const InvoicePage = () => {
     // compute display position among non-empty bills
     const pos = bills
       .map((bill, idx) => ({ bill, idx }))
-      .filter(entry => (entry.bill?.length || 0) > 0)
+      .filter(entry => (entry.bill?.items?.length || 0) > 0)
       .findIndex(entry => entry.idx === billIndex);
     setSelectedBillDisplayNumber(pos >= 0 ? pos + 1 : billIndex + 1);
     setShowViewBill(true);
   };
 
   // Track printed bills
-  const trackPrintedBill = (billIndex, billItems) => {
-    const billTotal = calculateBillTotal(billItems);
-    const printedBill = {
-      billNumber: billIndex + 1,
-      items: billItems,
-      totalAmount: billTotal,
-      printedAt: new Date().toISOString(),
-      itemCount: billItems.length
-    };
-    
-    setPrintedBills(prev => {
-      const updated = [...prev];
-      const existingIndex = updated.findIndex(bill => bill.billNumber === printedBill.billNumber);
+  const trackPrintedBill = async (billIndex, billItems) => {
+    try {
+      const billTotal = calculateBillTotal(billItems);
+      const printedBill = {
+        billNumber: billIndex + 1,
+        items: billItems,
+        totalAmount: billTotal,
+        printedAt: new Date().toISOString(),
+        itemCount: billItems.length,
+        printCount: 1
+      };
       
-      if (existingIndex !== -1) {
-        // Update existing bill
-        updated[existingIndex] = { ...printedBill, printCount: (updated[existingIndex].printCount || 1) + 1 };
-      } else {
-        // Add new bill
-        updated.push({ ...printedBill, printCount: 1 });
-      }
-      
-      return updated;
-    });
+      await addPrintedBill(printedBill);
+      await loadPrintedBills();
+    } catch (error) {
+      console.error('Failed to track printed bill:', error);
+      showError('Failed to track printed bill');
+    }
   };
 
   // Handle print bill
-  const handlePrintBill = (billIndex) => {
-    const billItems = bills[billIndex] || [];
+  const handlePrintBill = async (billIndex) => {
+    const currentBill = bills[billIndex];
+    const billItems = currentBill?.items || [];
     if (billItems.length === 0) {
       showWarning('No items in this bill to print!');
       return;
     }
     
     // Track the printed bill
-    trackPrintedBill(billIndex, billItems);
+    await trackPrintedBill(billIndex, billItems);
     
     // Use the existing print functionality from Summary component
     const printWindow = window.open('', 'print', 'height=900,width=1100');
@@ -239,124 +337,137 @@ const InvoicePage = () => {
   };
 
   // Clear printed bills
-  const clearPrintedBills = () => {
+  const clearPrintedBillsHandler = async () => {
     if (window.confirm('Are you sure you want to clear all printed bill records?')) {
-      setPrintedBills([]);
-      showSuccess('Printed bill records cleared successfully!');
+      try {
+        await clearPrintedBills();
+        await loadPrintedBills();
+        showSuccess('Printed bill records cleared successfully!');
+      } catch (error) {
+        showError(`Failed to clear printed bills: ${error.message}`);
+      }
     }
   };
 
   // Clear only bills (keep catalog items)
-  const clearAllBills = () => {
+  const clearAllBillsHandler = async () => {
     try {
-      // Clear only bills and printed bills from localStorage
-      localStorage.removeItem('bills');
-      localStorage.removeItem('currentBillIndex');
-      localStorage.removeItem('printedBills');
-    } catch (_) {}
-    // Reset bills state but keep catalog
-    setBills([[]]);
-    setCurrentBillIndex(0);
-    setPrintedBills([]);
-    setShowClearBillsModal(false);
-    showSuccess('All bills cleared. Catalog items preserved.');
+      await clearAllBills();
+      await clearPrintedBills();
+      await loadBills();
+      await loadPrintedBills();
+      setCurrentBillIndex(0);
+      await setSetting('currentBillIndex', 0);
+      setShowClearBillsModal(false);
+      showSuccess('All bills cleared. Catalog items preserved.');
+    } catch (error) {
+      showError(`Failed to clear bills: ${error.message}`);
+    }
   };
 
   // Clear all application records (catalog, bills, indices, printed bills)
-  const clearAllRecords = () => {
+  const clearAllRecordsHandler = async () => {
     try {
-      // Clear localStorage for the app (safer to clear all for this app)
-      localStorage.clear();
-    } catch (_) {}
-    // Reset in-memory state
-    setCatalogItems([]);
-    setBills([[]]);
-    setCurrentBillIndex(0);
-    setPrintedBills([]);
-    setShowClearAllModal(false);
-    showSuccess('All records cleared. You are starting fresh.');
+      await clearAllData();
+      await loadCatalogItems();
+      await loadBills();
+      await loadPrintedBills();
+      setCurrentBillIndex(0);
+      await setSetting('currentBillIndex', 0);
+      setShowClearAllModal(false);
+      showSuccess('All records cleared. You are starting fresh.');
+    } catch (error) {
+      showError(`Failed to clear all data: ${error.message}`);
+    }
   };
 
   // Dashboard metrics (ignore empty bills for counts and listings)
   const billEntries = bills
     .map((bill, index) => ({ index, bill }))
-    .filter(entry => Array.isArray(entry.bill) && entry.bill.length > 0);
+    .filter(entry => (entry.bill?.items?.length || 0) > 0);
   const totalBills = billEntries.length;
-  const totalAmount = bills.reduce((sum, bill) => sum + bill.reduce((s, it) => s + (it.qty * it.price * (1 - (it.discount||0)/100)), 0), 0);
+  const totalAmount = bills.reduce((sum, bill) => sum + (bill.totalAmount || 0), 0);
 
-  //local storage - load (only run once on mount)
-  useEffect(()=>{
-    if (isInitialized) return; // Prevent multiple loads
+  // Load data from IndexedDB when initialized
+  useEffect(() => {
+    if (!isInitialized) return;
     
-    const savedCatalog = localStorage.getItem('catalogitems');
-    const savedBills = localStorage.getItem('bills');
-    const savedBillIndex = localStorage.getItem('currentBillIndex');
-    const savedPrintedBills = localStorage.getItem('printedBills');
-    
-    if(savedCatalog){
+    const loadAllData = async () => {
       try {
-        const parsedCatalog = JSON.parse(savedCatalog);
-        setCatalogItems(parsedCatalog);
+        await Promise.all([
+          loadCatalogItems(),
+          loadBills(),
+          loadPrintedBills(),
+          loadCurrentBillIndex()
+        ]);
       } catch (error) {
-        console.error('Error parsing saved catalog items:', error);
+        console.error('Failed to load data:', error);
+        showError('Failed to load data from database');
       }
+    };
+
+    loadAllData();
+  }, [isInitialized]);
+
+  // Show migration modal if needed
+  useEffect(() => {
+    if (isInitialized && migrationStatus?.isNeeded && !migrationStatus?.isCompleted) {
+      setShowMigrationModal(true);
     }
-    if(savedBills){
-      try {
-        const parsedBills = JSON.parse(savedBills);
-        if (Array.isArray(parsedBills)) {
-          // Ensure we always have at least one bill
-          const billsToSet = parsedBills.length > 0 ? parsedBills : [[]];
-          setBills(billsToSet);
+  }, [isInitialized, migrationStatus]);
+
+  // Debug function for browser console
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.debugInvoiceBilling = {
+        testDataStructure: () => dataStructureTest.testAndFixDataStructure(),
+        fixDataStructure: () => dataStructureTest.fixDataStructure(),
+        validateDataStructure: () => dataStructureTest.validateDataStructure(),
+        getBills: () => getBills(),
+        getCatalogItems: () => getCatalogItems(),
+        getPrintedBills: () => getPrintedBills(),
+        getStats: () => getStats(),
+        clearAllData: () => clearAllData(),
+        loadAllData: async () => {
+          await loadCatalogItems();
+          await loadBills();
+          await loadPrintedBills();
+          console.log('All data loaded');
         }
-      } catch (error) {
-        console.error('Error parsing saved bills:', error);
-        setBills([[]]);
-      }
-    } else {
-      // Initialize with empty bill if no data in localStorage
-      setBills([[]]);
+      };
     }
-    if (savedBillIndex !== null) {
-      const idx = Number(savedBillIndex);
-      if (!Number.isNaN(idx)) {
-        setCurrentBillIndex(idx);
-      }
-    }
-    if(savedPrintedBills){
-      try {
-        const parsedPrintedBills = JSON.parse(savedPrintedBills);
-        if (Array.isArray(parsedPrintedBills)) {
-          setPrintedBills(parsedPrintedBills);
-        }
-      } catch (error) {
-        console.error('Error parsing saved printed bills:', error);
-        setPrintedBills([]);
-      }
-    }
-    
-    setIsInitialized(true);
-  },[isInitialized])
-  
-  useEffect(()=>{
-    if (!isInitialized) return; // Don't save during initial load
-    localStorage.setItem('catalogitems', JSON.stringify(catalogItems));
-  },[catalogItems, isInitialized])
+  }, [isInitialized]);
 
-  useEffect(()=>{
-    if (!isInitialized) return; // Don't save during initial load
-    localStorage.setItem('bills', JSON.stringify(bills));
-  },[bills, isInitialized])
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className='min-h-screen bg-slate-50 flex items-center justify-center'>
+        <div className='text-center'>
+          <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4'></div>
+          <p className='text-slate-600'>Initializing database...</p>
+        </div>
+      </div>
+    );
+  }
 
-  useEffect(()=>{
-    if (!isInitialized) return; // Don't save during initial load
-    localStorage.setItem('currentBillIndex', String(currentBillIndex));
-  },[currentBillIndex, isInitialized])
-
-  useEffect(()=>{
-    if (!isInitialized) return; // Don't save during initial load
-    localStorage.setItem('printedBills', JSON.stringify(printedBills));
-  },[printedBills, isInitialized])
+  // Show error state
+  if (error) {
+    return (
+      <div className='min-h-screen bg-slate-50 flex items-center justify-center'>
+        <div className='text-center max-w-md mx-auto p-6'>
+          <div className='text-red-500 text-6xl mb-4'>⚠️</div>
+          <h2 className='text-xl font-semibold text-slate-900 mb-2'>Database Error</h2>
+          <p className='text-slate-600 mb-4'>{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className='px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700'
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className='min-h-screen bg-slate-50'>
@@ -428,20 +539,29 @@ const InvoicePage = () => {
                 </div>
               </div>
               
-              {/* Export Button */}
-              <button
-                onClick={exportPrintedBillsToExcel}
-                disabled={printedBills.length === 0}
-                className='w-full px-4 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2'
-              >
-                <span>📊</span>
-                Export Excel File
-              </button>
+              {/* Export Buttons */}
+              <div className='space-y-2'>
+                <button
+                  onClick={() => setShowExportModal(true)}
+                  className='w-full px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-semibold shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2'
+                >
+                  <span>📊</span>
+                  Monthly Export
+                </button>
+                <button
+                  onClick={exportPrintedBillsToExcel}
+                  disabled={printedBills.length === 0}
+                  className='w-full px-4 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2'
+                >
+                  <span>📋</span>
+                  Quick Export
+                </button>
+              </div>
               
               {/* Clear Buttons */}
               <div className='space-y-2 mt-2'>
                 <button
-                  onClick={clearPrintedBills}
+                  onClick={clearPrintedBillsHandler}
                   className='w-full px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 font-medium text-sm transition-colors flex items-center justify-center gap-2'
                 >
                   <span>📋</span>
@@ -531,8 +651,8 @@ const InvoicePage = () => {
                         <BillCard
                           key={index}
                           billNumber={displayIdx + 1}
-                          totalAmount={calculateBillTotal(bill)}
-                          itemCount={bill.length}
+                          totalAmount={calculateBillTotal(bill.items || [])}
+                          itemCount={bill.items?.length || 0}
                           onView={() => handleViewBill(index)}
                           onPrint={() => handlePrintBill(index)}
                         />
@@ -624,10 +744,45 @@ const InvoicePage = () => {
                   Cancel
                 </button>
                 <button
-                  onClick={clearAllBills}
+                  onClick={clearAllBillsHandler}
                   className='px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 font-semibold'
                 >
                   Yes, clear bills
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Migration Modal */}
+        {showMigrationModal && (
+          <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4'>
+            <div className='bg-white rounded-xl shadow-xl w-full max-w-md p-6'>
+              <h3 className='text-lg font-semibold text-slate-900 mb-2'>Database Migration Required</h3>
+              <p className='text-sm text-slate-600 mb-4'>We found existing data in localStorage that needs to be migrated to the new IndexedDB system for better performance and storage capacity.</p>
+              <div className='bg-blue-50 border border-blue-200 text-blue-800 text-xs rounded-lg p-3 mb-4'>
+                💡 This is a one-time process. Your data will be safely migrated and backed up.
+              </div>
+              <div className='flex flex-col sm:flex-row gap-3 sm:justify-end'>
+                <button
+                  onClick={() => setShowMigrationModal(false)}
+                  className='px-4 py-2 rounded-lg bg-slate-200 text-slate-800 hover:bg-slate-300 font-semibold'
+                >
+                  Skip for now
+                </button>
+                <button
+                  onClick={async () => {
+                    try {
+                      await performMigration();
+                      setShowMigrationModal(false);
+                      showSuccess('Migration completed successfully!');
+                    } catch (error) {
+                      showError(`Migration failed: ${error.message}`);
+                    }
+                  }}
+                  className='px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 font-semibold'
+                >
+                  Start Migration
                 </button>
               </div>
             </div>
@@ -651,7 +806,7 @@ const InvoicePage = () => {
                   Cancel
                 </button>
                 <button
-                  onClick={clearAllRecords}
+                  onClick={clearAllRecordsHandler}
                   className='px-4 py-2 rounded-lg bg-red-800 text-white hover:bg-red-900 font-semibold'
                 >
                   Yes, reset everything
@@ -665,21 +820,37 @@ const InvoicePage = () => {
           open={showCreateBill}
           onClose={() => setShowCreateBill(false)}
           catalogItems={catalogItems}
-          onAddItems={(items) => {
-            // If we only have a single empty bill, put items into it; otherwise create new
-            setBills(prev => {
-              const all = [...prev];
-              if (all.length === 1 && (all[0]?.length || 0) === 0) {
-                all[0] = items;
-                setCurrentBillIndex(0);
-                return all;
+          onAddItems={async (items) => {
+            try {
+              // Check if we have an empty bill to reuse
+              const hasEmptyBill = bills.length === 1 && (bills[0]?.items?.length || 0) === 0;
+              
+              if (hasEmptyBill) {
+                // Update the existing empty bill
+                const currentBill = bills[0];
+                if (currentBill && currentBill.id) {
+                  await updateBill(currentBill.id, { ...currentBill, items });
+                  await loadBills();
+                  setCurrentBillIndex(0);
+                  await setSetting('currentBillIndex', 0);
+                }
+              } else {
+                // Create new bill
+                await addBill({
+                  billNumber: bills.length + 1,
+                  items,
+                  createdAt: new Date().toISOString()
+                });
+                await loadBills();
+                setCurrentBillIndex(bills.length);
+                await setSetting('currentBillIndex', bills.length);
               }
-              all.push(items);
-              setCurrentBillIndex(all.length - 1);
-              return all;
-            });
-            setShowCreateBill(false);
-            showSuccess(`New bill created with ${items.length} items!`);
+              
+              setShowCreateBill(false);
+              showSuccess(`New bill created with ${items.length} items!`);
+            } catch (error) {
+              showError(`Failed to create bill: ${error.message}`);
+            }
           }}
         />
 
@@ -696,11 +867,17 @@ const InvoicePage = () => {
         <ViewBillModal
           open={showViewBill}
           onClose={() => setShowViewBill(false)}
-          bill={selectedBillIndex !== null ? bills[selectedBillIndex] : []}
+          bill={selectedBillIndex !== null ? bills[selectedBillIndex]?.items || [] : []}
           billNumber={selectedBillDisplayNumber}
           onEditItem={editItem}
           onDeleteItem={deleteItem}
           onPrint={() => selectedBillIndex !== null && handlePrintBill(selectedBillIndex)}
+        />
+
+        {/* Monthly Export Modal */}
+        <MonthlyExportModal
+          open={showExportModal}
+          onClose={() => setShowExportModal(false)}
         />
       </div>
     </div>
