@@ -12,7 +12,6 @@ import { calculateSummary } from '../Utils/Cal'
 import * as XLSX from 'xlsx'
 import { useToast } from '../contexts/ToastContext'
 import useIndexedDB from '../hooks/useIndexedDB'
-import dataStructureTest from '../utils/DataStructureTest'
 
 const InvoicePage = () => {
   const { showSuccess, showError, showInfo, showWarning } = useToast();
@@ -420,9 +419,6 @@ const InvoicePage = () => {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       window.debugInvoiceBilling = {
-        testDataStructure: () => dataStructureTest.testAndFixDataStructure(),
-        fixDataStructure: () => dataStructureTest.fixDataStructure(),
-        validateDataStructure: () => dataStructureTest.validateDataStructure(),
         getBills: () => getBills(),
         getCatalogItems: () => getCatalogItems(),
         getPrintedBills: () => getPrintedBills(),
@@ -433,6 +429,27 @@ const InvoicePage = () => {
           await loadBills();
           await loadPrintedBills();
           console.log('All data loaded');
+        },
+        testDataStructure: async () => {
+          try {
+            const bills = await getBills();
+            const catalogItems = await getCatalogItems();
+            const printedBills = await getPrintedBills();
+            console.log('Data structure test:', {
+              bills: bills.length,
+              catalogItems: catalogItems.length,
+              printedBills: printedBills.length,
+              billsStructure: bills.map(bill => ({
+                hasItems: Array.isArray(bill.items),
+                hasTotalAmount: typeof bill.totalAmount === 'number',
+                hasBillNumber: !!bill.billNumber
+              }))
+            });
+            return { success: true, message: 'Data structure validated' };
+          } catch (error) {
+            console.error('Data structure test failed:', error);
+            return { success: false, error: error.message };
+          }
         }
       };
     }
