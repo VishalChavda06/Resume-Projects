@@ -2,16 +2,51 @@ import React, { useState } from 'react'
 import { Dialog, DialogHeader, DialogFooter } from './ui/Dialog'
 import Button from './ui/Button'
 
-const ViewBillModal = ({ open, onClose, bill, billNumber, onEditItem, onDeleteItem, onPrint }) => {
+const ViewBillModal = ({ open, onClose, bill, billNumber, onEditItem, onDeleteItem, onPrint, onUpdateGST }) => {
   const [editingIndex, setEditingIndex] = useState(null)
   const [editItem, setEditItem] = useState({})
+  const [includeGST, setIncludeGST] = useState(bill?.includeGST || false)
+  const [gstRate, setGstRate] = useState(bill?.gstRate || 18)
+
+  // Safety check for bill prop
+  if (!bill) {
+    return (
+      <Dialog open={open} onClose={onClose}>
+        <DialogHeader>Bill Not Found</DialogHeader>
+        <div className='p-6 text-center text-slate-500'>
+          This bill could not be found or loaded.
+        </div>
+        <DialogFooter>
+          <Button variant='outline' onClick={onClose}>
+            Close
+          </Button>
+        </DialogFooter>
+      </Dialog>
+    )
+  }
 
   const calculateItemTotal = (item) => {
     return item.qty * item.price * (1 - (item.discount || 0) / 100)
   }
 
+  const calculateSubtotal = () => {
+    if (!bill || !bill.items) return 0
+    return bill.items.reduce((sum, item) => sum + calculateItemTotal(item), 0)
+  }
+
+  const calculateGST = () => {
+    if (!includeGST) return 0
+    return calculateSubtotal() * (gstRate / 100)
+  }
+
   const calculateTotal = () => {
-    return bill.reduce((sum, item) => sum + calculateItemTotal(item), 0)
+    return calculateSubtotal() + calculateGST()
+  }
+
+  const handleGSTChange = () => {
+    if (onUpdateGST) {
+      onUpdateGST(includeGST, gstRate)
+    }
   }
 
   const formatAmount = (amount) => {
@@ -59,9 +94,9 @@ const ViewBillModal = ({ open, onClose, bill, billNumber, onEditItem, onDeleteIt
       </DialogHeader>
       
       <div className='space-y-4'>
-        {bill.length > 0 ? (
+        {bill && bill.items && bill.items.length > 0 ? (
           <div className='space-y-3'>
-            {bill.map((item, index) => (
+            {bill.items.map((item, index) => (
               <div key={index} className='p-4 border border-slate-200 rounded-lg bg-slate-50'>
                 {editingIndex === index ? (
                   // Edit Mode
@@ -182,13 +217,75 @@ const ViewBillModal = ({ open, onClose, bill, billNumber, onEditItem, onDeleteIt
               </div>
             ))}
             
+            {/* GST Settings */}
+            <div className='border-t border-slate-200 pt-4'>
+              <h3 className='text-lg font-semibold text-slate-900 mb-3'>GST Settings</h3>
+              <div className='space-y-4'>
+                <div className='flex items-center space-x-3'>
+                  <input
+                    type='checkbox'
+                    id='includeGST'
+                    checked={includeGST}
+                    onChange={(e) => {
+                      setIncludeGST(e.target.checked)
+                      handleGSTChange()
+                    }}
+                    className='h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded'
+                  />
+                  <label htmlFor='includeGST' className='text-sm font-medium text-slate-700'>
+                    Include GST in this bill
+                  </label>
+                </div>
+                
+                {includeGST && (
+                  <div className='flex items-center space-x-3'>
+                    <label htmlFor='gstRate' className='text-sm font-medium text-slate-700'>
+                      GST Rate:
+                    </label>
+                    <input
+                      type='number'
+                      id='gstRate'
+                      min='0'
+                      max='100'
+                      step='0.01'
+                      value={gstRate}
+                      onChange={(e) => {
+                        setGstRate(parseFloat(e.target.value) || 0)
+                        handleGSTChange()
+                      }}
+                      className='w-20 px-3 py-2 border border-slate-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500'
+                    />
+                    <span className='text-sm text-slate-500'>%</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* Total */}
             <div className='border-t border-slate-200 pt-4'>
-              <div className='flex justify-between items-center'>
-                <span className='text-lg font-semibold text-slate-900'>Total Amount:</span>
-                <span className='text-2xl font-bold text-indigo-600'>
-                  ₹ {formatAmount(calculateTotal())}
-                </span>
+              <div className='space-y-2'>
+                <div className='flex justify-between items-center'>
+                  <span className='text-sm text-slate-600'>Subtotal:</span>
+                  <span className='text-sm font-medium text-slate-900'>
+                    ₹ {formatAmount(calculateSubtotal())}
+                  </span>
+                </div>
+                
+                {includeGST && (
+                  <div className='flex justify-between items-center'>
+                    <span className='text-sm text-slate-600'>GST ({gstRate}%):</span>
+                    <span className='text-sm font-medium text-slate-900'>
+                      ₹ {formatAmount(calculateGST())}
+                    </span>
+                  </div>
+                )}
+                
+                <div className='flex justify-between items-center pt-2 border-t border-slate-200'>
+                  <span className='text-lg font-semibold text-slate-900'>Total Amount:</span>
+                  <span className='text-2xl font-bold text-indigo-600'>
+                    ₹ {formatAmount(calculateTotal())}
+                  </span>
+                </div>
               </div>
             </div>
           </div>

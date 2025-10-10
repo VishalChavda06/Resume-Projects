@@ -181,7 +181,13 @@ const InvoicePage = () => {
   };
 
   // Calculate bill total
-  const calculateBillTotal = (billItems) => {
+  const calculateBillTotal = (billItems, bill = null) => {
+    // If bill has pre-calculated totalAmount, use it
+    if (bill && typeof bill.totalAmount === 'number') {
+      return bill.totalAmount;
+    }
+    
+    // Fallback to calculating from items
     if (!Array.isArray(billItems)) {
       return 0;
     }
@@ -244,7 +250,20 @@ const InvoicePage = () => {
     printWindow.document.write(`<link rel="stylesheet" href="${printCssUrl}" />`);
     printWindow.document.write("</head><body>");
 
-    const { subtotal } = calculateSummary(billItems);
+    // Calculate totals
+    const subtotal = billItems.reduce((sum, item) => {
+      return sum + (item.qty * item.price * (1 - (item.discount || 0) / 100));
+    }, 0);
+    
+    const includeGST = currentBill?.includeGST || false;
+    const gstRate = currentBill?.gstRate || 18;
+    const gstAmount = includeGST ? subtotal * (gstRate / 100) : 0;
+    const totalAmount = subtotal + gstAmount;
+
+    // Build table headers based on GST inclusion
+    const tableHeaders = includeGST 
+      ? `<th>#</th><th>Name</th><th>Quantity</th><th>Price</th><th>Discount (%)</th><th>Subtotal</th><th>GST (${gstRate}%)</th><th>Total</th>`
+      : `<th>#</th><th>Name</th><th>Quantity</th><th>Price</th><th>Discount (%)</th><th>Total</th>`;
 
     printWindow.document.write(`
       <div class="header">
@@ -254,32 +273,47 @@ const InvoicePage = () => {
       <table>
         <thead>
           <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Discount (%)</th>
-            <th>Total</th>
+            ${tableHeaders}
           </tr>
         </thead>
         <tbody>
           ${billItems.map((item, idx) => {
-            const total = item.qty * item.price * (1 - (item.discount || 0) / 100);
-            return `
-              <tr>
-                <td class="right">${idx + 1}</td>
-                <td>${item.name}</td>
-                <td class="right">${item.qty}</td>
-                <td class="right">${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(item.price)}</td>
-                <td class="right">${item.discount || 0}</td>
-                <td class="right">${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(total)}</td>
-              </tr>
-            `;
+            const itemSubtotal = item.qty * item.price * (1 - (item.discount || 0) / 100);
+            const itemGST = includeGST ? itemSubtotal * (gstRate / 100) : 0;
+            const itemTotal = itemSubtotal + itemGST;
+            
+            if (includeGST) {
+              return `
+                <tr>
+                  <td class="right">${idx + 1}</td>
+                  <td>${item.name}</td>
+                  <td class="right">${item.qty}</td>
+                  <td class="right">${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(item.price)}</td>
+                  <td class="right">${item.discount || 0}</td>
+                  <td class="right">${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(itemSubtotal)}</td>
+                  <td class="right">${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(itemGST)}</td>
+                  <td class="right">${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(itemTotal)}</td>
+                </tr>
+              `;
+            } else {
+              return `
+                <tr>
+                  <td class="right">${idx + 1}</td>
+                  <td>${item.name}</td>
+                  <td class="right">${item.qty}</td>
+                  <td class="right">${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(item.price)}</td>
+                  <td class="right">${item.discount || 0}</td>
+                  <td class="right">${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(itemSubtotal)}</td>
+                </tr>
+              `;
+            }
           }).join('')}
         </tbody>
       </table>
       <table class="totals">
-        <tr class="final"><td>Total Amount</td><td class="right">${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(subtotal)}</td></tr>
+        <tr><td>Subtotal</td><td class="right">${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(subtotal)}</td></tr>
+        ${includeGST ? `<tr><td>GST (${gstRate}%)</td><td class="right">${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(gstAmount)}</td></tr>` : ''}
+        <tr class="final"><td>Total Amount</td><td class="right">${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(totalAmount)}</td></tr>
       </table>
     `);
     
@@ -490,7 +524,7 @@ const InvoicePage = () => {
 
   return (
     <div className='min-h-screen bg-slate-50'>
-      <div className='max-w-7xl mx-auto p-6'>
+    <div className='max-w-7xl mx-auto p-6'>
         <div className='flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4'>
           <h1 className='text-2xl sm:text-3xl font-bold text-slate-900'>Invoice Billing</h1>
           <button
@@ -625,36 +659,36 @@ const InvoicePage = () => {
                       </div>
                       <div className='w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center'>
                         <span className='text-2xl'>📄</span>
-                      </div>
-                    </div>
-                  </div>
-                  
+            </div>
+          </div>
+        </div>
+        
                   <div className='bg-white rounded-xl p-6 shadow-sm border border-slate-200'>
-                    <div className='flex items-center justify-between'>
-                      <div>
+          <div className='flex items-center justify-between'>
+            <div>
                         <p className='text-sm font-medium text-slate-500'>Total Amount</p>
                         <p className='text-3xl font-bold text-slate-900 mt-1'>
-                          ₹ {new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(totalAmount)}
-                        </p>
-                      </div>
+                ₹ {new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(totalAmount)}
+              </p>
+            </div>
                       <div className='w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center'>
-                        <span className='text-2xl'>💰</span>
-                      </div>
-                    </div>
-                  </div>
-                  
+              <span className='text-2xl'>💰</span>
+            </div>
+          </div>
+        </div>
+        
                   <div className='bg-white rounded-xl p-6 shadow-sm border border-slate-200'>
-                    <div className='flex items-center justify-between'>
-                      <div>
+          <div className='flex items-center justify-between'>
+            <div>
                         <p className='text-sm font-medium text-slate-500'>Catalog Items</p>
                         <p className='text-3xl font-bold text-slate-900 mt-1'>{catalogItems.length}</p>
-                      </div>
+            </div>
                       <div className='w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center'>
-                        <span className='text-2xl'>📦</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <span className='text-2xl'>📦</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
 
                 {/* Bills Grid */}
@@ -670,7 +704,7 @@ const InvoicePage = () => {
                         <BillCard
                           key={index}
                           billNumber={displayIdx + 1}
-                          totalAmount={calculateBillTotal(bill.items || [])}
+                          totalAmount={calculateBillTotal(bill.items || [], bill)}
                           itemCount={bill.items?.length || 0}
                           onView={() => handleViewBill(index)}
                           onPrint={() => handlePrintBill(index)}
@@ -711,7 +745,7 @@ const InvoicePage = () => {
                           <div className='flex items-center gap-4'>
                             <div className='text-right'>
                               <p className='font-semibold text-slate-900'>
-                                ₹ {new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(calculateBillTotal(bill.items || []))}
+                                ₹ {new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(calculateBillTotal(bill.items || [], bill))}
                               </p>
                             </div>
                             <div className='flex gap-2'>
@@ -830,21 +864,35 @@ const InvoicePage = () => {
                 >
                   Yes, reset everything
                 </button>
-              </div>
-            </div>
           </div>
+        </div>
+      </div>
         )}
-        {/* Create Bill Modal */}
+      {/* Create Bill Modal */}
         <CreateBillModal
           open={showCreateBill}
           onClose={() => setShowCreateBill(false)}
           catalogItems={catalogItems}
-          onAddItems={async (items) => {
+          onAddItems={async (items, includeGST = false, gstRate = 18) => {
             try {
+              // Calculate totals with GST
+              const subtotal = items.reduce((sum, item) => {
+                const itemTotal = item.qty * item.price * (1 - (item.discount || 0) / 100);
+                return sum + itemTotal;
+              }, 0);
+              
+              const gstAmount = includeGST ? subtotal * (gstRate / 100) : 0;
+              const totalAmount = subtotal + gstAmount;
+              
               // Always create a bill record in DB, then set index from DB
               await addBill({
                 billNumber: (bills[bills.length - 1]?.billNumber || bills.length) + 1,
                 items,
+                includeGST,
+                gstRate,
+                subtotal,
+                gstAmount,
+                totalAmount,
                 createdAt: new Date().toISOString()
               });
               await loadBills();
@@ -861,24 +909,50 @@ const InvoicePage = () => {
           }}
         />
 
-        {/* Create Item Modal */}
+      {/* Create Item Modal */}
         <Dialog open={showCreateItem} onClose={() => setShowCreateItem(false)}>
-          <DialogHeader>Create Catalog Item</DialogHeader>
+        <DialogHeader>Create Catalog Item</DialogHeader>
           <ItemForm addItem={(item) => { addItem(item); setShowCreateItem(false); }} />
-          <DialogFooter>
+        <DialogFooter>
             <Button variant='outline' onClick={() => setShowCreateItem(false)}>Cancel</Button>
-          </DialogFooter>
-        </Dialog>
+        </DialogFooter>
+      </Dialog>
 
         {/* View Bill Modal */}
         <ViewBillModal
           open={showViewBill}
           onClose={() => setShowViewBill(false)}
-          bill={selectedBillIndex !== null ? bills[selectedBillIndex]?.items || [] : []}
+          bill={selectedBillIndex !== null ? bills[selectedBillIndex] : null}
           billNumber={selectedBillDisplayNumber}
           onEditItem={editItem}
           onDeleteItem={deleteItem}
           onPrint={() => selectedBillIndex !== null && handlePrintBill(selectedBillIndex)}
+          onUpdateGST={async (includeGST, gstRate) => {
+            if (selectedBillIndex !== null) {
+              try {
+                const currentBill = bills[selectedBillIndex];
+                const subtotal = currentBill.items.reduce((sum, item) => {
+                  const itemTotal = item.qty * item.price * (1 - (item.discount || 0) / 100);
+                  return sum + itemTotal;
+                }, 0);
+                const gstAmount = includeGST ? subtotal * (gstRate / 100) : 0;
+                const totalAmount = subtotal + gstAmount;
+                
+                await updateBill(currentBill.id, {
+                  ...currentBill,
+                  includeGST,
+                  gstRate,
+                  subtotal,
+                  gstAmount,
+                  totalAmount
+                });
+                await loadBills();
+                showSuccess('GST settings updated successfully!');
+              } catch (error) {
+                showError(`Failed to update GST: ${error.message}`);
+              }
+            }
+          }}
         />
 
         {/* Monthly Export Modal */}
