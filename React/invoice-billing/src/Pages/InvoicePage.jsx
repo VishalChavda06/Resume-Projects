@@ -165,9 +165,11 @@ const InvoicePage = () => {
           createdAt: new Date().toISOString()
         });
         await loadBills();
-        // Set current bill index to the new bill (last index)
-        setCurrentBillIndex(bills.length);
-        await setSetting('currentBillIndex', bills.length);
+        // Fetch updated bills to get the correct new index
+        const updatedBills = await getBills();
+        const newIdx = Math.max(0, updatedBills.length - 1);
+        setCurrentBillIndex(newIdx);
+        await setSetting('currentBillIndex', newIdx);
       } else {
         // Reuse existing empty bill
         setCurrentBillIndex(0);
@@ -381,7 +383,7 @@ const InvoicePage = () => {
   };
 
   // Dashboard metrics (ignore empty bills for counts and listings)
-  const billEntries = bills
+  const billEntries = (Array.isArray(bills) ? bills : [])
     .map((bill, index) => ({ index, bill }))
     .filter(entry => (entry.bill?.items?.length || 0) > 0);
   const totalBills = billEntries.length;
@@ -704,12 +706,12 @@ const InvoicePage = () => {
                         <div className='flex items-center justify-between'>
                           <div>
                             <h3 className='font-semibold text-slate-900'>Bill #{displayIdx + 1}</h3>
-                            <p className='text-sm text-slate-500'>{bill.length} items</p>
+                            <p className='text-sm text-slate-500'>{bill.items?.length || 0} items</p>
                           </div>
                           <div className='flex items-center gap-4'>
                             <div className='text-right'>
                               <p className='font-semibold text-slate-900'>
-                                ₹ {new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(calculateBillTotal(bill))}
+                                ₹ {new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(calculateBillTotal(bill.items || []))}
                               </p>
                             </div>
                             <div className='flex gap-2'>
@@ -839,29 +841,17 @@ const InvoicePage = () => {
           catalogItems={catalogItems}
           onAddItems={async (items) => {
             try {
-              // Check if we have an empty bill to reuse
-              const hasEmptyBill = bills.length === 1 && (bills[0]?.items?.length || 0) === 0;
-              
-              if (hasEmptyBill) {
-                // Update the existing empty bill
-                const currentBill = bills[0];
-                if (currentBill && currentBill.id) {
-                  await updateBill(currentBill.id, { ...currentBill, items });
-                  await loadBills();
-                  setCurrentBillIndex(0);
-                  await setSetting('currentBillIndex', 0);
-                }
-              } else {
-                // Create new bill
-                await addBill({
-                  billNumber: bills.length + 1,
-                  items,
-                  createdAt: new Date().toISOString()
-                });
-                await loadBills();
-                setCurrentBillIndex(bills.length);
-                await setSetting('currentBillIndex', bills.length);
-              }
+              // Always create a bill record in DB, then set index from DB
+              await addBill({
+                billNumber: (bills[bills.length - 1]?.billNumber || bills.length) + 1,
+                items,
+                createdAt: new Date().toISOString()
+              });
+              await loadBills();
+              const updatedBills = await getBills();
+              const newIdx = Math.max(0, updatedBills.length - 1);
+              setCurrentBillIndex(newIdx);
+              await setSetting('currentBillIndex', newIdx);
               
               setShowCreateBill(false);
               showSuccess(`New bill created with ${items.length} items!`);
