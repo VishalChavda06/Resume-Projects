@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Dialog, DialogHeader, DialogFooter } from './ui/Dialog'
 import Button from './ui/Button'
 
@@ -7,6 +7,14 @@ const ViewBillModal = ({ open, onClose, bill, billNumber, onEditItem, onDeleteIt
   const [editItem, setEditItem] = useState({})
   const [includeGST, setIncludeGST] = useState(bill?.includeGST || false)
   const [gstRate, setGstRate] = useState(bill?.gstRate || 18)
+
+  // Update GST settings when bill changes
+  useEffect(() => {
+    if (bill) {
+      setIncludeGST(bill.includeGST || false)
+      setGstRate(bill.gstRate || 18)
+    }
+  }, [bill])
 
   // Safety check for bill prop
   if (!bill) {
@@ -27,6 +35,16 @@ const ViewBillModal = ({ open, onClose, bill, billNumber, onEditItem, onDeleteIt
 
   const calculateItemTotal = (item) => {
     return item.qty * item.price * (1 - (item.discount || 0) / 100)
+  }
+
+  const calculateItemGST = (item) => {
+    if (!includeGST) return 0
+    const itemSubtotal = calculateItemTotal(item)
+    return itemSubtotal * (gstRate / 100)
+  }
+
+  const calculateItemTotalWithGST = (item) => {
+    return calculateItemTotal(item) + calculateItemGST(item)
   }
 
   const calculateSubtotal = () => {
@@ -162,13 +180,31 @@ const ViewBillModal = ({ open, onClose, bill, billNumber, onEditItem, onDeleteIt
                       </div>
                     </div>
                     
-                    <div className='flex justify-between items-center'>
-                      <span className='text-sm text-slate-600'>
-                        Unit Price: ₹ {formatAmount(editItem.price)}
-                      </span>
-                      <span className='font-semibold text-slate-900'>
-                        Total: ₹ {formatAmount(calculateItemTotal(editItem))}
-                      </span>
+                    <div className='space-y-2'>
+                      <div className='flex justify-between items-center'>
+                        <span className='text-sm text-slate-600'>
+                          Unit Price: ₹ {formatAmount(editItem.price)}
+                        </span>
+                        <span className='text-sm font-medium text-slate-900'>
+                          Subtotal: ₹ {formatAmount(calculateItemTotal(editItem))}
+                        </span>
+                      </div>
+                      {includeGST && (
+                        <div className='flex justify-between items-center'>
+                          <span className='text-sm text-slate-600'>
+                            GST ({gstRate}%): 
+                          </span>
+                          <span className='text-sm font-medium text-green-600'>
+                            ₹ {formatAmount(calculateItemGST(editItem))}
+                          </span>
+                        </div>
+                      )}
+                      <div className='flex justify-between items-center pt-2 border-t border-slate-200'>
+                        <span className='font-semibold text-slate-900'>Total:</span>
+                        <span className='font-semibold text-slate-900'>
+                          ₹ {formatAmount(includeGST ? calculateItemTotalWithGST(editItem) : calculateItemTotal(editItem))}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 ) : (
@@ -192,7 +228,7 @@ const ViewBillModal = ({ open, onClose, bill, billNumber, onEditItem, onDeleteIt
                       </div>
                     </div>
                     
-                    <div className='grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm'>
+                    <div className={`grid gap-4 text-sm ${includeGST ? 'grid-cols-2 sm:grid-cols-6' : 'grid-cols-2 sm:grid-cols-4'}`}>
                       <div>
                         <span className='text-slate-600'>Qty:</span>
                         <span className='ml-2 font-medium'>{item.qty}</span>
@@ -205,10 +241,20 @@ const ViewBillModal = ({ open, onClose, bill, billNumber, onEditItem, onDeleteIt
                         <span className='text-slate-600'>Discount:</span>
                         <span className='ml-2 font-medium'>{item.discount}%</span>
                       </div>
+                      <div>
+                        <span className='text-slate-600'>Subtotal:</span>
+                        <span className='ml-2 font-medium'>₹ {formatAmount(calculateItemTotal(item))}</span>
+                      </div>
+                      {includeGST && (
+                        <div>
+                          <span className='text-slate-600'>GST ({gstRate}%):</span>
+                          <span className='ml-2 font-medium text-green-600'>₹ {formatAmount(calculateItemGST(item))}</span>
+                        </div>
+                      )}
                       <div className='text-right'>
                         <span className='text-slate-600'>Total:</span>
                         <span className='ml-2 font-semibold text-slate-900'>
-                          ₹ {formatAmount(calculateItemTotal(item))}
+                          ₹ {formatAmount(includeGST ? calculateItemTotalWithGST(item) : calculateItemTotal(item))}
                         </span>
                       </div>
                     </div>

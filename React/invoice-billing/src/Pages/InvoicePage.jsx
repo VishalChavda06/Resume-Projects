@@ -94,6 +94,36 @@ const InvoicePage = () => {
     }
   };
 
+  // Recalculate printed bills totals to fix GST issues
+  const recalculatePrintedBills = async () => {
+    try {
+      const printed = await getPrintedBills();
+      let needsUpdate = false;
+      
+      for (const printedBill of printed) {
+        // Check if this printed bill has GST but totalAmount doesn't include it
+        if (printedBill.includeGST && printedBill.subtotal && printedBill.gstAmount) {
+          const correctTotal = printedBill.subtotal + printedBill.gstAmount;
+          if (Math.abs(printedBill.totalAmount - correctTotal) > 0.01) {
+            // Update the printed bill with correct total
+            await addPrintedBill({
+              ...printedBill,
+              totalAmount: correctTotal
+            });
+            needsUpdate = true;
+          }
+        }
+      }
+      
+      if (needsUpdate) {
+        await loadPrintedBills();
+        showSuccess('Printed bills totals updated successfully!');
+      }
+    } catch (error) {
+      console.error('Failed to recalculate printed bills:', error);
+    }
+  };
+
   const loadCurrentBillIndex = async () => {
     try {
       const index = await getSetting('currentBillIndex');
@@ -182,8 +212,13 @@ const InvoicePage = () => {
 
   // Calculate bill total
   const calculateBillTotal = (billItems, bill = null) => {
-    // If bill has pre-calculated totalAmount, use it
-    if (bill && typeof bill.totalAmount === 'number') {
+    // If bill has GST, calculate as subtotal + gstAmount
+    if (bill && bill.includeGST && typeof bill.subtotal === 'number' && typeof bill.gstAmount === 'number') {
+      return bill.subtotal + bill.gstAmount;
+    }
+    
+    // If bill has pre-calculated totalAmount and no GST, use it
+    if (bill && typeof bill.totalAmount === 'number' && !bill.includeGST) {
       return bill.totalAmount;
     }
     
@@ -209,11 +244,18 @@ const InvoicePage = () => {
   // Track printed bills
   const trackPrintedBill = async (billIndex, billItems) => {
     try {
-      const billTotal = calculateBillTotal(billItems);
+      const currentBill = bills[billIndex];
+      // Use the correct total amount from the bill (includes GST if applicable)
+      const billTotal = calculateBillTotal(billItems, currentBill);
+      
       const printedBill = {
         billNumber: billIndex + 1,
         items: billItems,
         totalAmount: billTotal,
+        includeGST: currentBill?.includeGST || false,
+        gstRate: currentBill?.gstRate || 0,
+        subtotal: currentBill?.subtotal || 0,
+        gstAmount: currentBill?.gstAmount || 0,
         printedAt: new Date().toISOString(),
         itemCount: billItems.length,
         printCount: 1
@@ -421,7 +463,24 @@ const InvoicePage = () => {
     .map((bill, index) => ({ index, bill }))
     .filter(entry => (entry.bill?.items?.length || 0) > 0);
   const totalBills = billEntries.length;
-  const totalAmount = bills.reduce((sum, bill) => sum + (bill.totalAmount || 0), 0);
+  const totalAmount = bills.reduce((sum, bill) => {
+    // For bills with GST, use subtotal + gstAmount
+    if (bill.includeGST && typeof bill.subtotal === 'number' && typeof bill.gstAmount === 'number') {
+      return sum + (bill.subtotal + bill.gstAmount);
+    }
+    // For bills without GST, use totalAmount or calculate from items
+    if (typeof bill.totalAmount === 'number') {
+      return sum + bill.totalAmount;
+    }
+    // Fallback: calculate from items
+    if (bill.items && Array.isArray(bill.items)) {
+      const itemTotal = bill.items.reduce((itemSum, item) => {
+        return itemSum + (item.qty * item.price * (1 - (item.discount || 0) / 100));
+      }, 0);
+      return sum + itemTotal;
+    }
+    return sum;
+  }, 0);
 
   // Load data from IndexedDB when initialized
   useEffect(() => {
@@ -435,6 +494,8 @@ const InvoicePage = () => {
           loadPrintedBills(),
           loadCurrentBillIndex()
         ]);
+        // Recalculate printed bills to fix any GST calculation issues
+        await recalculatePrintedBills();
       } catch (error) {
         console.error('Failed to load data:', error);
         showError('Failed to load data from database');
@@ -586,7 +647,10 @@ const InvoicePage = () => {
                   <p className='text-sm text-slate-500'>Total Amount</p>
                   <p className='text-lg font-bold text-slate-900'>
                     ₹ {new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(
-                      printedBills.reduce((sum, bill) => sum + bill.totalAmount, 0)
+                      printedBills.reduce((sum, bill) => {
+                        // For printed bills, use the stored totalAmount (which should be correct)
+                        return sum + (bill.totalAmount || 0);
+                      }, 0)
                     )}
                   </p>
                 </div>
@@ -708,6 +772,10 @@ const InvoicePage = () => {
                           itemCount={bill.items?.length || 0}
                           onView={() => handleViewBill(index)}
                           onPrint={() => handlePrintBill(index)}
+                          includeGST={bill.includeGST || false}
+                          gstRate={bill.gstRate || 0}
+                          subtotal={bill.subtotal || 0}
+                          gstAmount={bill.gstAmount || 0}
                         />
                       ))}
                     </div>

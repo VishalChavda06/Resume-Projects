@@ -234,7 +234,8 @@ class IndexedDBService {
           ...bill,
           createdAt: now.toISOString(),
           monthYear,
-          totalAmount: this.calculateBillTotal(bill.items || [])
+          // Use the totalAmount from the bill if it exists, otherwise calculate it
+          totalAmount: bill.totalAmount || this.calculateBillTotal(bill.items || [])
         });
         
         request.onsuccess = () => resolve(request.result);
@@ -257,7 +258,8 @@ class IndexedDBService {
           ...bill,
           id,
           updatedAt: new Date().toISOString(),
-          totalAmount: this.calculateBillTotal(bill.items || [])
+          // Use the totalAmount from the bill if it exists, otherwise calculate it
+          totalAmount: bill.totalAmount || this.calculateBillTotal(bill.items || [])
         });
         
         request.onsuccess = () => resolve();

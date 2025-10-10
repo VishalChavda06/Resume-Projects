@@ -1,8 +1,16 @@
 import React from 'react'
 
-const BillCard = ({ billNumber, totalAmount, itemCount, onView, onPrint }) => {
+const BillCard = ({ billNumber, totalAmount, itemCount, onView, onPrint, includeGST, gstRate, subtotal, gstAmount }) => {
   const formatAmount = (amount) => {
     return new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(amount);
+  };
+
+  // Calculate the correct total amount
+  const getCorrectTotal = () => {
+    if (includeGST && typeof subtotal === 'number' && typeof gstAmount === 'number') {
+      return subtotal + gstAmount;
+    }
+    return totalAmount;
   };
 
   return (
@@ -18,10 +26,29 @@ const BillCard = ({ billNumber, totalAmount, itemCount, onView, onPrint }) => {
       </div>
       
       <div className='mb-6'>
-        <p className='text-2xl font-bold text-slate-900'>
-          ₹ {formatAmount(totalAmount)}
-        </p>
-        <p className='text-sm text-slate-500'>Total Amount</p>
+        {includeGST ? (
+          <div className='space-y-2'>
+            <div className='flex justify-between items-center text-sm'>
+              <span className='text-slate-600'>Subtotal:</span>
+              <span className='font-medium'>₹ {formatAmount(subtotal || 0)}</span>
+            </div>
+            <div className='flex justify-between items-center text-sm'>
+              <span className='text-slate-600'>GST ({gstRate || 0}%):</span>
+              <span className='font-medium text-green-600'>₹ {formatAmount(gstAmount || 0)}</span>
+            </div>
+            <div className='flex justify-between items-center pt-2 border-t border-slate-200'>
+              <span className='text-slate-900 font-semibold'>Total:</span>
+              <span className='text-2xl font-bold text-slate-900'>₹ {formatAmount(getCorrectTotal())}</span>
+            </div>
+          </div>
+        ) : (
+          <div>
+            <p className='text-2xl font-bold text-slate-900'>
+              ₹ {formatAmount(getCorrectTotal())}
+            </p>
+            <p className='text-sm text-slate-500'>Total Amount</p>
+          </div>
+        )}
       </div>
       
       <div className='flex gap-2'>
