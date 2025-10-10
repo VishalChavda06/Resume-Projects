@@ -192,6 +192,16 @@ export const useIndexedDB = () => {
     }
   }, [isInitialized]);
 
+  const updatePrintedBill = useCallback(async (id, printedBill) => {
+    if (!isInitialized) throw new Error('Database not initialized');
+    try {
+      return await indexedDBService.updatePrintedBill(id, printedBill);
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    }
+  }, [isInitialized]);
+
   const clearPrintedBills = useCallback(async () => {
     if (!isInitialized) throw new Error('Database not initialized');
     try {
@@ -281,6 +291,7 @@ export const useIndexedDB = () => {
     // Printed Bills
     getPrintedBills,
     addPrintedBill,
+    updatePrintedBill,
     clearPrintedBills,
     
     // Settings

@@ -14,7 +14,7 @@ const BillCard = ({ billNumber, totalAmount, itemCount, onView, onPrint, include
   };
 
   return (
-    <div className='bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-200'>
+    <div className='bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-200 h-full flex flex-col'>
       <div className='flex items-start justify-between mb-4'>
         <div>
           <h3 className='text-lg font-semibold text-slate-900'>Bill #{billNumber}</h3>
@@ -25,7 +25,7 @@ const BillCard = ({ billNumber, totalAmount, itemCount, onView, onPrint, include
         </div>
       </div>
       
-      <div className='mb-6'>
+      <div className='flex-1 flex flex-col justify-center'>
         {includeGST ? (
           <div className='space-y-2'>
             <div className='flex justify-between items-center text-sm'>
@@ -42,16 +42,24 @@ const BillCard = ({ billNumber, totalAmount, itemCount, onView, onPrint, include
             </div>
           </div>
         ) : (
-          <div>
-            <p className='text-2xl font-bold text-slate-900'>
-              ₹ {formatAmount(getCorrectTotal())}
-            </p>
-            <p className='text-sm text-slate-500'>Total Amount</p>
+          <div className='space-y-2'>
+            <div className='flex justify-between items-center text-sm'>
+              <span className='text-slate-600'>Total Amount:</span>
+              <span className='font-medium'>₹ {formatAmount(getCorrectTotal())}</span>
+            </div>
+            <div className='flex justify-between items-center text-sm'>
+              <span className='text-slate-600'>Items:</span>
+              <span className='font-medium'>{itemCount} products</span>
+            </div>
+            <div className='flex justify-between items-center pt-2 border-t border-slate-200'>
+              <span className='text-slate-900 font-semibold'>Total:</span>
+              <span className='text-2xl font-bold text-slate-900'>₹ {formatAmount(getCorrectTotal())}</span>
+            </div>
           </div>
         )}
       </div>
       
-      <div className='flex gap-2'>
+      <div className='flex gap-2 mt-6'>
         <button
           onClick={onView}
           className='flex-1 px-4 py-2.5 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors text-sm'

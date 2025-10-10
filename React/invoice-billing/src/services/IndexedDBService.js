@@ -344,6 +344,28 @@ class IndexedDBService {
   }
 
   /**
+   * Update an existing printed bill record
+   * @param {number} id - Printed bill ID
+   * @param {Object} printedBill - Updated printed bill object
+   * @returns {Promise<void>}
+   */
+  async updatePrintedBill(id, printedBill) {
+    return this.withTransaction(['printedBills'], 'readwrite', (transaction) => {
+      return new Promise((resolve, reject) => {
+        const store = transaction.objectStore('printedBills');
+        const request = store.put({
+          ...printedBill,
+          id,
+          updatedAt: new Date().toISOString()
+        });
+        
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+    });
+  }
+
+  /**
    * Clear all printed bills
    * @returns {Promise<void>}
    */

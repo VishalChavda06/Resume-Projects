@@ -34,6 +34,7 @@ const InvoicePage = () => {
     clearAllBills,
     getPrintedBills,
     addPrintedBill,
+    updatePrintedBill,
     clearPrintedBills,
     getSetting,
     setSetting,
@@ -57,6 +58,8 @@ const InvoicePage = () => {
   const [showClearBillsModal, setShowClearBillsModal] = useState(false);
   const [showMigrationModal, setShowMigrationModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [billsPerPage] = useState(6);
 
   // Data loading functions
   const loadCatalogItems = async () => {
@@ -245,24 +248,36 @@ const InvoicePage = () => {
   const trackPrintedBill = async (billIndex, billItems) => {
     try {
       const currentBill = bills[billIndex];
-      // Use the correct total amount from the bill (includes GST if applicable)
-      const billTotal = calculateBillTotal(billItems, currentBill);
+      const billNumber = billIndex + 1;
       
-      const printedBill = {
-        billNumber: billIndex + 1,
-        items: billItems,
-        totalAmount: billTotal,
-        includeGST: currentBill?.includeGST || false,
-        gstRate: currentBill?.gstRate || 0,
-        subtotal: currentBill?.subtotal || 0,
-        gstAmount: currentBill?.gstAmount || 0,
-        printedAt: new Date().toISOString(),
-        itemCount: billItems.length,
-        printCount: 1
-      };
+      // Check if this bill has already been printed
+      const existingPrintedBills = await getPrintedBills();
+      const existingBill = existingPrintedBills.find(bill => bill.billNumber === billNumber);
       
-      await addPrintedBill(printedBill);
-      await loadPrintedBills();
+      if (existingBill) {
+        // Bill already exists, just show message without updating count
+        showInfo(`Bill #${billNumber} printed successfully!`);
+      } else {
+        // New bill, create new printed bill entry (count = 1)
+        const billTotal = calculateBillTotal(billItems, currentBill);
+        
+        const printedBill = {
+          billNumber: billNumber,
+          items: billItems,
+          totalAmount: billTotal,
+          includeGST: currentBill?.includeGST || false,
+          gstRate: currentBill?.gstRate || 0,
+          subtotal: currentBill?.subtotal || 0,
+          gstAmount: currentBill?.gstAmount || 0,
+          printedAt: new Date().toISOString(),
+          itemCount: billItems.length,
+          printCount: 1  // Always set to 1, never increment
+        };
+        
+        await addPrintedBill(printedBill);
+        await loadPrintedBills();
+        showSuccess(`Bill #${billNumber} printed successfully!`);
+      }
     } catch (error) {
       console.error('Failed to track printed bill:', error);
       showError('Failed to track printed bill');
@@ -463,6 +478,12 @@ const InvoicePage = () => {
     .map((bill, index) => ({ index, bill }))
     .filter(entry => (entry.bill?.items?.length || 0) > 0);
   const totalBills = billEntries.length;
+  
+  // Pagination logic
+  const totalPages = Math.ceil(totalBills / billsPerPage);
+  const startIndex = (currentPage - 1) * billsPerPage;
+  const endIndex = startIndex + billsPerPage;
+  const paginatedBills = billEntries.slice(startIndex, endIndex);
   const totalAmount = bills.reduce((sum, bill) => {
     // For bills with GST, use subtotal + gstAmount
     if (bill.includeGST && typeof bill.subtotal === 'number' && typeof bill.gstAmount === 'number') {
@@ -702,7 +723,13 @@ const InvoicePage = () => {
               
               {printedBills.length > 0 && (
                 <div className='mt-3 text-xs text-slate-500 text-center'>
-                  Last printed: {new Date(printedBills[printedBills.length - 1]?.printedAt).toLocaleString()}
+                  Last printed: {new Date(
+                    printedBills.reduce((latest, bill) => {
+                      const billTime = new Date(bill.lastPrintedAt || bill.printedAt);
+                      const latestTime = new Date(latest);
+                      return billTime > latestTime ? bill.lastPrintedAt || bill.printedAt : latest;
+                    }, printedBills[0]?.printedAt)
+                  ).toLocaleString()}
                 </div>
               )}
             </div>
@@ -763,22 +790,66 @@ const InvoicePage = () => {
                   </div>
                   
                   {totalBills > 0 ? (
-                    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-                      {billEntries.map(({ bill, index }, displayIdx) => (
-                        <BillCard
-                          key={index}
-                          billNumber={displayIdx + 1}
-                          totalAmount={calculateBillTotal(bill.items || [], bill)}
-                          itemCount={bill.items?.length || 0}
-                          onView={() => handleViewBill(index)}
-                          onPrint={() => handlePrintBill(index)}
-                          includeGST={bill.includeGST || false}
-                          gstRate={bill.gstRate || 0}
-                          subtotal={bill.subtotal || 0}
-                          gstAmount={bill.gstAmount || 0}
-                        />
-                      ))}
-                    </div>
+                    <>
+                      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+                        {paginatedBills.map(({ bill, index }, displayIdx) => (
+                          <BillCard
+                            key={index}
+                            billNumber={startIndex + displayIdx + 1}
+                            totalAmount={calculateBillTotal(bill.items || [], bill)}
+                            itemCount={bill.items?.length || 0}
+                            onView={() => handleViewBill(index)}
+                            onPrint={() => handlePrintBill(index)}
+                            includeGST={bill.includeGST || false}
+                            gstRate={bill.gstRate || 0}
+                            subtotal={bill.subtotal || 0}
+                            gstAmount={bill.gstAmount || 0}
+                          />
+                        ))}
+                      </div>
+                      
+                      {/* Pagination Controls */}
+                      {totalPages > 1 && (
+                        <div className='mt-6 flex items-center justify-between'>
+                          <div className='text-sm text-slate-500'>
+                            Showing {startIndex + 1} to {Math.min(endIndex, totalBills)} of {totalBills} bills
+                          </div>
+                          <div className='flex items-center space-x-2'>
+                            <button
+                              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                              disabled={currentPage === 1}
+                              className='px-3 py-2 text-sm font-medium text-slate-500 bg-white border border-slate-300 rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed'
+                            >
+                              Previous
+                            </button>
+                            
+                            <div className='flex items-center space-x-1'>
+                              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                                <button
+                                  key={page}
+                                  onClick={() => setCurrentPage(page)}
+                                  className={`px-3 py-2 text-sm font-medium rounded-md ${
+                                    currentPage === page
+                                      ? 'bg-indigo-600 text-white'
+                                      : 'text-slate-500 bg-white border border-slate-300 hover:bg-slate-50'
+                                  }`}
+                                >
+                                  {page}
+                                </button>
+                              ))}
+                            </div>
+                            
+                            <button
+                              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                              disabled={currentPage === totalPages}
+                              className='px-3 py-2 text-sm font-medium text-slate-500 bg-white border border-slate-300 rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed'
+                            >
+                              Next
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </>
                   ) : (
                     <div className='text-center py-12'>
                       <div className='w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4'>
