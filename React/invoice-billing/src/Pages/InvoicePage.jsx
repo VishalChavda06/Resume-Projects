@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import ItemForm from '../components/ItemForm'
-import Summary from '../components/Summary'
 import Button from '../components/ui/Button'
 import { Dialog, DialogHeader, DialogFooter } from '../components/ui/Dialog'
 import BillCard from '../components/BillCard'
 import CreateBillModal from '../components/CreateBillModal'
 import ViewBillModal from '../components/ViewBillModal'
 import MonthlyExportModal from '../components/MonthlyExportModal'
-import printCssUrl from '../print.css?url'
 import { calculateSummary } from '../Utils/Cal'
 import * as XLSX from 'xlsx'
 import { useToast } from '../contexts/ToastContext'
 import useIndexedDB from '../hooks/useIndexedDB'
+import { printBill } from '../utils/printUtils'
 
 const InvoicePage = () => {
   const { showSuccess, showError, showInfo, showWarning } = useToast();
@@ -62,6 +61,7 @@ const InvoicePage = () => {
   const [billsPerPage] = useState(6);
   const [historyCurrentPage, setHistoryCurrentPage] = useState(1);
   const [historyBillsPerPage] = useState(10);
+  const [isPrinting, setIsPrinting] = useState(false);
 
   // Data loading functions
   const loadCatalogItems = async () => {
@@ -288,100 +288,36 @@ const InvoicePage = () => {
 
   // Handle print bill
   const handlePrintBill = async (billIndex) => {
+    // Prevent double execution
+    if (isPrinting) {
+      return;
+    }
+    
     const currentBill = bills[billIndex];
     const billItems = currentBill?.items || [];
+    
     if (billItems.length === 0) {
       showWarning('No items in this bill to print!');
       return;
     }
     
-    // Track the printed bill
-    await trackPrintedBill(billIndex, billItems);
+    setIsPrinting(true);
     
-    // Use the existing print functionality from Summary component
-    const printWindow = window.open('', 'print', 'height=900,width=1100');
-    if (!printWindow) {
-      showError('Unable to open print window. Please check your browser settings.');
-      return;
+    try {
+      // Track the printed bill
+      await trackPrintedBill(billIndex, billItems);
+      
+      // Use the print utility
+      printBill(
+        { billItems, currentBill, billIndex },
+        (message) => showSuccess(message),
+        (message) => showWarning(message),
+        () => setIsPrinting(false)
+      );
+    } catch (error) {
+      setIsPrinting(false);
+      showError('Failed to print bill');
     }
-    
-    printWindow.document.write("<html><head><title>Invoice Bill</title>");
-    printWindow.document.write(`<link rel="stylesheet" href="${printCssUrl}" />`);
-    printWindow.document.write("</head><body>");
-
-    // Calculate totals
-    const subtotal = billItems.reduce((sum, item) => {
-      return sum + (item.qty * item.price * (1 - (item.discount || 0) / 100));
-    }, 0);
-    
-    const includeGST = currentBill?.includeGST || false;
-    const gstRate = currentBill?.gstRate || 18;
-    const gstAmount = includeGST ? subtotal * (gstRate / 100) : 0;
-    const totalAmount = subtotal + gstAmount;
-
-    // Build table headers based on GST inclusion
-    const tableHeaders = includeGST 
-      ? `<th>#</th><th>Name</th><th>Quantity</th><th>Price</th><th>Discount (%)</th><th>Subtotal</th><th>GST (${gstRate}%)</th><th>Total</th>`
-      : `<th>#</th><th>Name</th><th>Quantity</th><th>Price</th><th>Discount (%)</th><th>Total</th>`;
-
-    printWindow.document.write(`
-      <div class="header">
-        <div class="title">INVOICE BILL #${billIndex + 1}</div>
-        <div style="color:#6b7280; font-size:12px;">${new Date().toLocaleString()}</div>
-      </div>
-      <table>
-        <thead>
-          <tr>
-            ${tableHeaders}
-          </tr>
-        </thead>
-        <tbody>
-          ${billItems.map((item, idx) => {
-            const itemSubtotal = item.qty * item.price * (1 - (item.discount || 0) / 100);
-            const itemGST = includeGST ? itemSubtotal * (gstRate / 100) : 0;
-            const itemTotal = itemSubtotal + itemGST;
-            
-            if (includeGST) {
-              return `
-                <tr>
-                  <td class="right">${idx + 1}</td>
-                  <td>${item.name}</td>
-                  <td class="right">${item.qty}</td>
-                  <td class="right">${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(item.price)}</td>
-                  <td class="right">${item.discount || 0}</td>
-                  <td class="right">${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(itemSubtotal)}</td>
-                  <td class="right">${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(itemGST)}</td>
-                  <td class="right">${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(itemTotal)}</td>
-                </tr>
-              `;
-            } else {
-              return `
-                <tr>
-                  <td class="right">${idx + 1}</td>
-                  <td>${item.name}</td>
-                  <td class="right">${item.qty}</td>
-                  <td class="right">${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(item.price)}</td>
-                  <td class="right">${item.discount || 0}</td>
-                  <td class="right">${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(itemSubtotal)}</td>
-                </tr>
-              `;
-            }
-          }).join('')}
-        </tbody>
-      </table>
-      <table class="totals">
-        <tr><td>Subtotal</td><td class="right">${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(subtotal)}</td></tr>
-        ${includeGST ? `<tr><td>GST (${gstRate}%)</td><td class="right">${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(gstAmount)}</td></tr>` : ''}
-        <tr class="final"><td>Total Amount</td><td class="right">${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(totalAmount)}</td></tr>
-      </table>
-    `);
-    
-    printWindow.document.write("</body></html>");
-    printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => { try { printWindow.print(); } catch (_) {} }, 250);
-    
-    showSuccess(`Bill #${billIndex + 1} sent to printer successfully!`);
   };
 
   // Export printed bills to Excel
