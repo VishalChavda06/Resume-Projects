@@ -60,6 +60,8 @@ const InvoicePage = () => {
   const [showExportModal, setShowExportModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [billsPerPage] = useState(6);
+  const [historyCurrentPage, setHistoryCurrentPage] = useState(1);
+  const [historyBillsPerPage] = useState(10);
 
   // Data loading functions
   const loadCatalogItems = async () => {
@@ -476,14 +478,21 @@ const InvoicePage = () => {
   // Dashboard metrics (ignore empty bills for counts and listings)
   const billEntries = (Array.isArray(bills) ? bills : [])
     .map((bill, index) => ({ index, bill }))
-    .filter(entry => (entry.bill?.items?.length || 0) > 0);
+    .filter(entry => (entry.bill?.items?.length || 0) > 0)
+    .sort((a, b) => b.index - a.index); // Sort by index in descending order (newest first)
   const totalBills = billEntries.length;
   
-  // Pagination logic
+  // Pagination logic for Recent Bills
   const totalPages = Math.ceil(totalBills / billsPerPage);
   const startIndex = (currentPage - 1) * billsPerPage;
   const endIndex = startIndex + billsPerPage;
   const paginatedBills = billEntries.slice(startIndex, endIndex);
+  
+  // Pagination logic for Invoice History
+  const historyTotalPages = Math.ceil(totalBills / historyBillsPerPage);
+  const historyStartIndex = (historyCurrentPage - 1) * historyBillsPerPage;
+  const historyEndIndex = historyStartIndex + historyBillsPerPage;
+  const paginatedHistoryBills = billEntries.slice(historyStartIndex, historyEndIndex);
   const totalAmount = bills.reduce((sum, bill) => {
     // For bills with GST, use subtotal + gstAmount
     if (bill.includeGST && typeof bill.subtotal === 'number' && typeof bill.gstAmount === 'number') {
@@ -795,7 +804,7 @@ const InvoicePage = () => {
                         {paginatedBills.map(({ bill, index }, displayIdx) => (
                           <BillCard
                             key={index}
-                            billNumber={startIndex + displayIdx + 1}
+                            billNumber={totalBills - (startIndex + displayIdx)}
                             totalAmount={calculateBillTotal(bill.items || [], bill)}
                             itemCount={bill.items?.length || 0}
                             onView={() => handleViewBill(index)}
@@ -871,41 +880,88 @@ const InvoicePage = () => {
 
             {activeTab === 'history' && (
               <div className='bg-white rounded-xl p-6 shadow-sm border border-slate-200'>
-                <h2 className='text-xl font-semibold text-slate-900 mb-6'>Invoice History</h2>
+                <div className='flex items-center justify-between mb-6'>
+                  <h2 className='text-xl font-semibold text-slate-900'>Invoice History</h2>
+                  <span className='text-sm text-slate-500'>{totalBills} bills total</span>
+                </div>
                 {totalBills > 0 ? (
-                  <div className='space-y-4'>
-                    {billEntries.map(({ bill, index }, displayIdx) => (
-                      <div key={index} className='border border-slate-200 rounded-lg p-4 hover:bg-slate-50 transition-colors'>
-                        <div className='flex items-center justify-between'>
-                          <div>
-                            <h3 className='font-semibold text-slate-900'>Bill #{displayIdx + 1}</h3>
-                            <p className='text-sm text-slate-500'>{bill.items?.length || 0} items</p>
-                          </div>
-                          <div className='flex items-center gap-4'>
-                            <div className='text-right'>
-                              <p className='font-semibold text-slate-900'>
-                                ₹ {new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(calculateBillTotal(bill.items || [], bill))}
-                              </p>
+                  <>
+                    <div className='space-y-4'>
+                      {paginatedHistoryBills.map(({ bill, index }, displayIdx) => (
+                        <div key={index} className='border border-slate-200 rounded-lg p-4 hover:bg-slate-50 transition-colors'>
+                          <div className='flex items-center justify-between'>
+                            <div>
+                              <h3 className='font-semibold text-slate-900'>Bill #{totalBills - (historyStartIndex + displayIdx)}</h3>
+                              <p className='text-sm text-slate-500'>{bill.items?.length || 0} items</p>
                             </div>
-                            <div className='flex gap-2'>
-                              <button
-                                onClick={() => handleViewBill(index)}
-                                className='px-3 py-1.5 text-sm bg-slate-100 text-slate-700 rounded-md hover:bg-slate-200 transition-colors'
-                              >
-                                View
-                              </button>
-                              <button
-                                onClick={() => handlePrintBill(index)}
-                                className='px-3 py-1.5 text-sm bg-indigo-100 text-indigo-700 rounded-md hover:bg-indigo-200 transition-colors'
-                              >
-                                Print
-                              </button>
+                            <div className='flex items-center gap-4'>
+                              <div className='text-right'>
+                                <p className='font-semibold text-slate-900'>
+                                  ₹ {new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(calculateBillTotal(bill.items || [], bill))}
+                                </p>
+                              </div>
+                              <div className='flex gap-2'>
+                                <button
+                                  onClick={() => handleViewBill(index)}
+                                  className='px-3 py-1.5 text-sm bg-slate-100 text-slate-700 rounded-md hover:bg-slate-200 transition-colors'
+                                >
+                                  View
+                                </button>
+                                <button
+                                  onClick={() => handlePrintBill(index)}
+                                  className='px-3 py-1.5 text-sm bg-indigo-100 text-indigo-700 rounded-md hover:bg-indigo-200 transition-colors'
+                                >
+                                  Print
+                                </button>
+                              </div>
                             </div>
                           </div>
                         </div>
+                      ))}
+                    </div>
+                    
+                    {/* Pagination Controls for Invoice History */}
+                    {historyTotalPages > 1 && (
+                      <div className='mt-6 flex items-center justify-between'>
+                        <div className='text-sm text-slate-500'>
+                          Showing {historyStartIndex + 1} to {Math.min(historyEndIndex, totalBills)} of {totalBills} bills
+                        </div>
+                        <div className='flex items-center space-x-2'>
+                          <button
+                            onClick={() => setHistoryCurrentPage(prev => Math.max(prev - 1, 1))}
+                            disabled={historyCurrentPage === 1}
+                            className='px-3 py-2 text-sm font-medium text-slate-500 bg-white border border-slate-300 rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed'
+                          >
+                            Previous
+                          </button>
+                          
+                          <div className='flex items-center space-x-1'>
+                            {Array.from({ length: historyTotalPages }, (_, i) => i + 1).map(page => (
+                              <button
+                                key={page}
+                                onClick={() => setHistoryCurrentPage(page)}
+                                className={`px-3 py-2 text-sm font-medium rounded-md ${
+                                  historyCurrentPage === page
+                                    ? 'bg-indigo-600 text-white'
+                                    : 'text-slate-500 bg-white border border-slate-300 hover:bg-slate-50'
+                                }`}
+                              >
+                                {page}
+                              </button>
+                            ))}
+                          </div>
+                          
+                          <button
+                            onClick={() => setHistoryCurrentPage(prev => Math.min(prev + 1, historyTotalPages))}
+                            disabled={historyCurrentPage === historyTotalPages}
+                            className='px-3 py-2 text-sm font-medium text-slate-500 bg-white border border-slate-300 rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed'
+                          >
+                            Next
+                          </button>
+                        </div>
                       </div>
-                    ))}
-                  </div>
+                    )}
+                  </>
                 ) : (
                   <div className='text-center py-12'>
                     <div className='w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4'>
